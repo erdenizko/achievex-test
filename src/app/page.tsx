@@ -107,8 +107,12 @@ function AchieveXForm() {
   const [beforeMilestoneData, setBeforeMilestoneData] = useState<MemberMilestoneResponse | null>(null);
   const [isShowRequestPreview, setIsShowRequestPreview] = useState(false);
   const [password, setPassword] = useState("");
-  const [showContent, setShowContent] = useState(localStorage.getItem("showContent") === "true");
+  const [showContent, setShowContent] = useState(false);
   const [token, setToken] = useState("");
+
+  useEffect(() => {
+    setShowContent(localStorage.getItem("showContent") === "true");
+  }, []);
 
   const { data, isLoading, isError } = useQuery<ActionItemResponse>({
     queryKey: ["action-items"],
