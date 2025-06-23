@@ -108,13 +108,14 @@ function AchieveXForm() {
   const [isShowRequestPreview, setIsShowRequestPreview] = useState(false);
   const [password, setPassword] = useState("");
   const [showContent, setShowContent] = useState(localStorage.getItem("showContent") === "true");
+  const [token, setToken] = useState("");
 
   const { data, isLoading, isError } = useQuery<ActionItemResponse>({
     queryKey: ["action-items"],
     queryFn: () => fetch("/api/tasks", {
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "x-api-key": token,
       },
     }).then((res) => res.json()),
   });
@@ -125,7 +126,7 @@ function AchieveXForm() {
     queryFn: () => fetch(`/api/members/external/${memberId}`, {
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "x-api-key": token,
       },
     }).then((res) => res.json()),
   });
@@ -136,7 +137,7 @@ function AchieveXForm() {
     queryFn: () => fetch(`/api/members/${memberId}/milestone-progress`, {
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+        "x-api-key": token,
       },
     }).then((res) => res.json()),
   });
@@ -147,7 +148,7 @@ function AchieveXForm() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "x-api-key": token,
         },
         body: JSON.stringify(newData),
       }).then((res) => res.json());
@@ -216,6 +217,15 @@ function AchieveXForm() {
       <div className={`flex w-full ${showContent ? "block" : "hidden"}`}>
         <div className="w-1/3 pr-8">
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="token">Token</Label>
+              <Input
+                id="token"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="Enter token"
+              />
+            </div>
             <div className="grid gap-2">
               <Label htmlFor="memberId">Member ID</Label>
               <Input
