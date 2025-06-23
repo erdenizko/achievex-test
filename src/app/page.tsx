@@ -114,7 +114,7 @@ function AchieveXForm() {
     setShowContent(localStorage.getItem("showContent") === "true");
   }, []);
 
-  const { data, isLoading, isError } = useQuery<ActionItemResponse>({
+  const { data, isLoading, isError, refetch: refetchActionItems } = useQuery<ActionItemResponse>({
     queryKey: ["action-items"],
     queryFn: () => fetch("/api/tasks", {
       headers: {
@@ -200,11 +200,15 @@ function AchieveXForm() {
   };
 
   useEffect(() => {
-    if (memberId) {
+    if (memberId && token) {
       refetchMemberData();
       refetchMemberMilestoneData();
     }
-  }, [memberId]);
+    if (token) {
+      refetchActionItems();
+    }
+  }, [memberId, token]);
+
 
   return (
     <main className="flex min-h-screen items-start justify-center p-24 bg-gray-50">
@@ -248,7 +252,7 @@ function AchieveXForm() {
                 <SelectContent>
                   {isLoading && <SelectItem value="loading" disabled>Loading...</SelectItem>}
                   {isError && <SelectItem value="error" disabled>Error fetching actions</SelectItem>}
-                  {data?.data.map((item: ActionItem) => (
+                  {data?.data?.map((item: ActionItem) => (
                     <SelectItem key={item.id} value={item.integrationKey}>
                       {item.name}
                     </SelectItem>
