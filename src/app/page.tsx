@@ -116,7 +116,7 @@ function AchieveXForm() {
 
   const { data, isLoading, isError, refetch: refetchActionItems } = useQuery<ActionItemResponse>({
     queryKey: ["action-items"],
-    queryFn: () => fetch("/api/tasks", {
+    queryFn: () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": token,
@@ -127,7 +127,7 @@ function AchieveXForm() {
   const { data: memberData, refetch: refetchMemberData } = useQuery<MemberResponse>({
     enabled: !!memberId,
     queryKey: ["member-data", memberId],
-    queryFn: () => fetch(`/api/members/external/${memberId}`, {
+    queryFn: () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/members/external/${memberId}`, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": token,
@@ -138,7 +138,7 @@ function AchieveXForm() {
   const { data: memberMilestoneData, refetch: refetchMemberMilestoneData } = useQuery<MemberMilestoneResponse>({
     enabled: !!memberId,
     queryKey: ["member-milestone-data", memberId],
-    queryFn: () => fetch(`/api/members/${memberId}/milestone-progress`, {
+    queryFn: () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/members/${memberId}/milestone-progress`, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": token,
@@ -148,7 +148,7 @@ function AchieveXForm() {
 
   const mutation = useMutation({
     mutationFn: (newData: FormData) => {
-      return fetch("/api/process", {
+      return fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/process`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
