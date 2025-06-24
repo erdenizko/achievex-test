@@ -115,8 +115,9 @@ function AchieveXForm() {
   }, []);
 
   const { data, isLoading, isError, refetch: refetchActionItems } = useQuery<ActionItemResponse>({
+    enabled: !!token,
     queryKey: ["action-items"],
-    queryFn: () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`, {
+    queryFn: () => fetch(`/api/tasks`, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": token,
@@ -127,7 +128,7 @@ function AchieveXForm() {
   const { data: memberData, refetch: refetchMemberData } = useQuery<MemberResponse>({
     enabled: !!memberId,
     queryKey: ["member-data", memberId],
-    queryFn: () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/members/external/${memberId}`, {
+    queryFn: () => fetch(`/api/members/external/${memberId}`, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": token,
@@ -138,7 +139,7 @@ function AchieveXForm() {
   const { data: memberMilestoneData, refetch: refetchMemberMilestoneData } = useQuery<MemberMilestoneResponse>({
     enabled: !!memberId,
     queryKey: ["member-milestone-data", memberId],
-    queryFn: () => fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/members/${memberId}/milestone-progress`, {
+    queryFn: () => fetch(`/api/members/${memberId}/milestone-progress`, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": token,
@@ -148,7 +149,7 @@ function AchieveXForm() {
 
   const mutation = useMutation({
     mutationFn: (newData: FormData) => {
-      return fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/process`, {
+      return fetch(`/api/process`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -319,19 +320,24 @@ function AchieveXForm() {
               {/* preview request data */}
               <h2 className="text-xl font-semibold mb-2 mt-4">Request Data</h2>
               <div className="bg-gray-100 p-4 rounded-md h-full overflow-auto">
-                <div><b>EndPoint:</b> {process.env.NEXT_PUBLIC_API_URL}/api/process</div>
+                <div><b>EndPoint:</b> /api/process</div>
                 <div><b>Method:</b> POST</div>
                 <div><b>Headers:</b></div>
                 <pre className="text-sm">{JSON.stringify({
                   "Content-Type": "application/json",
-                  "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
+                  "x-api-key": token,
                 }, null, 2)}</pre>
                 <div><b>Body:</b></div>
                 <pre className="text-sm">{JSON.stringify({
                   memberId,
                   integrationKey,
                   points,
-                  additionalData,
+                  additionalData: additionalData.reduce((acc, { key, value }) => {
+                    if (key) {
+                      acc[key] = value;
+                    }
+                    return acc;
+                  }, {} as Record<string, string>),
                   timestamp,
                 }, null, 2)}</pre>
               </div>
