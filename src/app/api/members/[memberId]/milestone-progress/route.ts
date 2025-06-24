@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  context: { params: { memberId: string } }
+  { params }: { params: Promise<{ memberId: string }> }
 ) {
   const token = request.headers.get("x-api-key");
-  const { memberId } = context.params;
+  const { memberId } = await params;
 
   if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
