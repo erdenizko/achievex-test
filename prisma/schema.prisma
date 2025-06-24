@@ -1,0 +1,440 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Organization model for B2B clients
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tokens                   OrganizationToken[]
+  members                  Member[]
+  tasks                    Task[]
+  milestones               Milestone[]
+  events                   Event[]
+  levels                   Level[]
+  users                    User[]
+  invites                  Invite[]
+  Reward                   Reward[]
+  webhooks                 Webhook[]
+  integrations             Integration[]
+  OrganizationTokenHistory OrganizationTokenHistory[]
+}
+
+model Integration {
+  id              String             @id @default(uuid())
+  organizationId  String
+  integrationType IntegrationType
+  appId           String
+  appSecret       String
+  events          IntegrationEvent[]
+  status          Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model IntegrationEvent {
+  id                 String      @id @default(uuid())
+  integrationId      String
+  eventName          String
+  taskIntegrationKey String
+  memberIdColumnName String
+  pointsColumnName   String
+  query              String?
+  lastFetchTimestamp DateTime?
+  additionalFields   String[]
+  integration        Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+}
+
+// OrganizationToken model for API access tokens
+model OrganizationToken {
+  id             String                     @id @default(uuid())
+  name           String                     @db.VarChar(255)
+  token          String                     @unique @db.VarChar(255)
+  type           TokenType                  @default(ADMIN)
+  expiresAt      DateTime?
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+  lastUsedAt     DateTime?
+  lastRotatedAt  DateTime?
+  organizationId String
+  organization   Organization               @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  history        OrganizationTokenHistory[]
+}
+
+// Add new model for token history
+model OrganizationTokenHistory {
+  id             String            @id @default(uuid())
+  token          String            @db.VarChar(255)
+  createdAt      DateTime          @default(now())
+  expiresAt      DateTime // Grace period expiration
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  replacedById   String // ID of the token that replaced this one
+  replacedBy     OrganizationToken @relation(fields: [replacedById], references: [id], onDelete: Cascade)
+}
+
+// Member model for end-users of the loyalty system
+model Member {
+  id              String   @id @default(uuid())
+  externalId      String // ID from the client's system
+  organizationId  String
+  totalPoints     Float    @default(0)
+  spendablePoints Float    @default(0) // Points available for redeeming rewards
+  currentLevel    Int      @default(1)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  taskCompletions     TaskCompletion[]
+  milestoneProgress   MilestoneProgress[]
+  eventParticipations EventParticipation[]
+  claimedRewards      MemberReward[] // Relation to track claimed rewards
+  referralId          String?
+
+  @@unique([organizationId, externalId])
+}
+
+// Task model for defining point-earning activities
+model Task {
+  id             String     @id @default(uuid())
+  organizationId String
+  name           String
+  description    String?
+  integrationKey String // Used by client systems to identify the task
+  pointsType     PointsType
+  pointsValue    Float      @default(0) // Fixed points or percentage for dynamic points
+  rateLimit      RateLimit  @default(UNLIMITED)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  additionalData String[]
+
+  organization          Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  taskCompletions       TaskCompletion[]
+  milestoneRequirements MilestoneRequirement[]
+  eventTaskMultipliers  EventTaskMultiplier[]
+
+  @@unique([organizationId, integrationKey])
+}
+
+// TaskCompletion tracks when members complete tasks
+model TaskCompletion {
+  id           String   @id @default(uuid())
+  memberId     String
+  taskId       String
+  pointsEarned Float
+  completedAt  DateTime @default(now())
+  eventId      String? // If completed during an event
+  additionalData Json?
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  event  Event? @relation(fields: [eventId], references: [id])
+}
+
+// Milestone model for defining achievement conditions
+model Milestone {
+  id             String   @id @default(uuid())
+  organizationId String
+  name           String
+  description    String?
+  rewardPoints   Int
+  isStreakBased  Boolean  @default(false)
+  streakDuration Int? // Number of periods (days/weeks/months) for streak if applicable
+  streakType     StreakType? @default(DAILY) // Type of streak period
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  imageUrl       String?
+  isActive       Boolean  @default(true)
+  startDate      DateTime?
+  endDate        DateTime?
+  resetOnComplete Boolean @default(false)
+
+  organization Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  requirements MilestoneRequirement[]
+  progress     MilestoneProgress[]
+}
+
+// MilestoneRequirement defines conditions for milestone completion
+model MilestoneRequirement {
+  id              String          @id @default(uuid())
+  milestoneId     String
+  taskId          String? // Optional, if milestone is based on specific task
+  data            String          @default("")
+  operator        Operator        @default(EQUAL_TO)
+  targetValue     String          @default("1")
+  repeatCount     Int             @default(1)
+
+  milestone Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  task      Task?     @relation(fields: [taskId], references: [id])
+}
+
+// MilestoneProgress tracks member progress toward milestones
+model MilestoneProgress {
+  id                       String    @id @default(uuid())
+  memberId                 String
+  milestoneId              String
+  completed                Boolean   @default(false)
+  lastUpdated              DateTime  @default(now())
+  streakStartDate          DateTime?
+  currentStreak            Int       @default(0)
+  milestoneRequirementsIds String[]
+
+  member    Member                         @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  milestone Milestone                      @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  progress  MilestoneRequirementProgress[]
+
+  @@unique([memberId, milestoneId])
+}
+
+model MilestoneRequirementProgress {
+  id                  String            @id @default(uuid())
+  milestoneProgressId String
+  requirementId       String
+  currentValue        Int
+  completed           Boolean           @default(false)
+  lastUpdated         DateTime          @default(now())
+  MilestoneProgress   MilestoneProgress @relation(fields: [milestoneProgressId], references: [id])
+}
+
+// Event model for special promotions and tournaments
+model Event {
+  id             String    @id @default(uuid())
+  organizationId String
+  name           String
+  description    String?
+  startDate      DateTime?
+  endDate        DateTime?
+  minimumLevel   Int? // Minimum level required to participate
+  isActive       Boolean   @default(false)
+  isTournament   Boolean   @default(false)
+  numWinners     Int? // Number of winners for tournaments
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization    Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  taskMultipliers EventTaskMultiplier[]
+  taskCompletions TaskCompletion[]
+  participations  EventParticipation[]
+}
+
+// EventTaskMultiplier defines point multipliers for tasks during events
+model EventTaskMultiplier {
+  id         String @id @default(uuid())
+  eventId    String
+  taskId     String
+  multiplier Float // e.g., 2.0 for double points
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  task  Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, taskId])
+}
+
+// EventParticipation tracks member participation in events
+model EventParticipation {
+  id       String   @id @default(uuid())
+  eventId  String
+  memberId String
+  joinedAt DateTime @default(now())
+  points   Int      @default(0)
+
+  event  Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, memberId])
+}
+
+// Level model for defining member levels
+model Level {
+  id             String   @id @default(uuid())
+  organizationId String
+  level          Int
+  name           String
+  pointsRequired Int
+  imageUrl       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, level])
+}
+
+// User model for system users (admins and regular users)
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  password       String
+  name           String
+  role           UserRole @default(USER)
+  organizationId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invites      Invite[]
+
+  @@index([organizationId])
+}
+
+// Invite model for organization invitations
+model Invite {
+  id             String       @id @default(uuid())
+  email          String
+  organizationId String
+  role           UserRole     @default(USER)
+  status         InviteStatus @default(PENDING)
+  token          String       @unique
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdById    String
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation(fields: [createdById], references: [id])
+
+  @@unique([organizationId, email])
+  @@index([token])
+}
+
+// Reward model for defining rewards that members can claim
+model Reward {
+  id                 String       @id @default(uuid())
+  organizationId     String
+  name               String
+  description        String?
+  pointsCost         Int // Points required to claim this reward
+  isActive           Boolean      @default(true)
+  startDate          DateTime? // Optional start date for time-limited rewards
+  endDate            DateTime? // Optional end date for time-limited rewards
+  maxClaims          Int? // Maximum number of times this reward can be claimed (null = unlimited)
+  maxClaimsPerMember Int? // Maximum number of times a member can claim this reward (null = unlimited)
+  claimPeriod        ClaimPeriod? // Optional period limitation for claims
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberRewards MemberReward[] // Relation to track which members claimed this reward
+
+  @@index([organizationId])
+}
+
+// MemberReward model to track which rewards have been claimed by members
+model MemberReward {
+  id         String   @id @default(uuid())
+  memberId   String
+  rewardId   String
+  claimedAt  DateTime @default(now())
+  pointsCost Int // Store the point cost at time of claiming (in case reward cost changes later)
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  reward Reward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+  @@index([rewardId])
+}
+
+// Webhook model for external integrations
+model Webhook {
+  id             String         @id @default(uuid())
+  organizationId String
+  name           String
+  url            String
+  secret         String? // Secret key for webhook signature
+  events         WebhookEvent[]
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+// Enums
+enum PointsType {
+  FIXED
+  DYNAMIC
+}
+
+enum RateLimit {
+  ONCE // Can only be completed once ever
+  DAILY // Can be completed once per day
+  WEEKLY // Can be completed once per week
+  MONTHLY // Can be completed once per month
+  UNLIMITED // Can be completed unlimited times
+}
+
+enum RequirementType {
+  TASK_COMPLETIONS // Number of times a specific task is completed
+  TOTAL_POINTS // Total points accumulated
+}
+
+enum Operator {
+  LOWER_THAN // Lower than a value
+  HIGHER_THAN // Higher than a value
+  EQUAL_TO // Equal to a value
+  NOT_EQUAL_TO // Not equal to a value
+  CONTAINS // Contains a value
+}
+
+enum TokenType {
+  ADMIN // Full access to all operations
+  READONLY // Can only read data, no modifications
+  WRITE // Can read and write data but not manage tokens or organization settings
+  EVENTS // Can only manage events
+  CUSTOM // Custom permissions (for future expansion)
+}
+
+enum UserRole {
+  ADMIN // Can access all organization endpoints
+  USER // Limited access to organization endpoints
+}
+
+enum InviteStatus {
+  PENDING // Invite created but email not sent
+  SENT // Email sent
+  ACCEPTED // User registered using the invite
+  EXPIRED // Invite expired
+}
+
+// Add new enum for claim period limitations
+enum ClaimPeriod {
+  DAILY // Can be claimed once per day
+  WEEKLY // Can be claimed once per week
+  MONTHLY // Can be claimed once per month
+  ONCE // Can be claimed once
+  NO_LIMIT // Can be claimed unlimited times
+}
+
+enum WebhookEvent {
+  LEVEL_CHANGE
+  MILESTONE_ACHIEVED
+  REWARD_CLAIMED
+}
+
+enum StreakType {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum IntegrationType {
+  WEEZLYTICS
+}

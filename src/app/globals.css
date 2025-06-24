@@ -114,9 +114,11 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: #f8f9fe;
+    background-image: linear-gradient(to top left, #f8f9fe 0%, #eef2f9 100%);
   }
 }
