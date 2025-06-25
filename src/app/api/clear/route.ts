@@ -5,8 +5,6 @@ export async function POST(request: Request) {
     const token = request.headers.get("x-api-key");
     const body = await request.json();
 
-    console.log(body.memberId);
-
     if (!token) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -42,9 +40,6 @@ export async function POST(request: Request) {
         if (!taskCompletion) {
             return NextResponse.json({ error: "Task completion not found" }, { status: 404 });
         }
-
-        console.log(member.totalPoints, taskCompletion.pointsEarned);
-        console.log(member.totalPoints - taskCompletion.pointsEarned);
 
         await prisma.member.update({
             where: {
