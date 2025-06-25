@@ -110,7 +110,7 @@ export function MilestonePreview({ data, title }: MilestonePreviewProps) {
                     <div>
                         <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Your Milestones</h3>
                         <div className="grid grid-cols-1 md:grid-cols-1 gap-3">
-                            {data.memberMilestones.map((milestone) => (
+                            {data.memberMilestones.sort((a, b) => a.name.localeCompare(b.name)).sort((a) => a.isStreakBased ? -1 : 1).map((milestone) => (
                                 <MilestoneCard key={milestone.id} milestone={milestone} />
                             ))}
                         </div>
