@@ -1,4 +1,9 @@
 import { NextResponse } from "next/server";
+import http from 'http';
+
+const agent = new http.Agent({
+    keepAlive: false,
+});
 
 export async function GET(
   request: Request,
@@ -20,12 +25,14 @@ export async function GET(
 
   try {
     const apiResponse = await fetch(
-      `${process.env.API_URL}/api/members/${memberId}/milestone-progress`,
+      `${process.env.ACHIEVEX_API_URL}/members/${memberId}/milestone-progress`,
       {
         headers: {
           "Content-Type": "application/json",
           "x-api-key": token,
         },
+        // @ts-expect-error - Node.js fetch supports agent but it's not in the types
+        agent: process.env.ACHIEVEX_API_URL.startsWith('http://') ? agent : undefined,
       }
     );
 

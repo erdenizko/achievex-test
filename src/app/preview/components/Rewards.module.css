@@ -1,0 +1,441 @@
+.titleSection {
+    position: relative;
+    margin-bottom: 60px;
+    padding: 40px 0;
+    background: linear-gradient(135deg, 
+        rgba(147, 51, 234, 0.1) 0%, 
+        rgba(255, 215, 0, 0.05) 50%,
+        rgba(59, 130, 246, 0.1) 100%);
+    border-radius: 24px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.titleSection::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.05) 0%, 
+        transparent 50%);
+    pointer-events: none;
+}
+
+.titleContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    position: relative;
+    z-index: 2;
+}
+
+.titleIcons {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.iconWrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, 
+        rgba(147, 51, 234, 0.2) 0%, 
+        rgba(255, 215, 0, 0.2) 100%);
+    border: 2px solid rgba(148, 163, 184, 0.3);
+    backdrop-filter: blur(10px);
+    animation: float 3s ease-in-out infinite;
+    position: relative;
+}
+
+.iconWrapper:nth-child(1) { animation-delay: 0s; }
+.iconWrapper:nth-child(2) { animation-delay: 0.8s; }
+.iconWrapper:nth-child(3) { animation-delay: 1.6s; }
+
+.rewardIcon1 {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 0 10px rgba(147, 51, 234, 0.8));
+    animation: gift 3s ease-in-out infinite;
+}
+
+.rewardIcon2 {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.8));
+    animation: diamond 2s ease-in-out infinite;
+}
+
+.rewardIcon3 {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.8));
+    animation: cart 2.5s ease-in-out infinite;
+}
+
+.title {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.titleMain {
+    background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(147, 51, 234, 0.5);
+}
+
+.titleAccent {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+}
+
+.titleSubtext {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    color: #94a3b8;
+    font-weight: 500;
+    background: rgba(30, 41, 59, 0.3);
+    padding: 12px 24px;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    backdrop-filter: blur(10px);
+    margin-top: 16px;
+}
+
+.subtextIcon {
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+.titleDecorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.decoration1 {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, rgba(147, 51, 234, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 4s ease-in-out infinite;
+}
+
+.decoration2 {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 3s ease-in-out infinite reverse;
+}
+
+.decoration3 {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 5s ease-in-out infinite;
+}
+
+.decoration4 {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 25px;
+    height: 25px;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 3.5s ease-in-out infinite;
+}
+
+.decoration5 {
+    position: absolute;
+    top: 30px;
+    right: 60%;
+    width: 35px;
+    height: 35px;
+    background: radial-gradient(circle, rgba(249, 115, 22, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 4.5s ease-in-out infinite;
+}
+
+.decoration6 {
+    position: absolute;
+    bottom: 50px;
+    left: 60%;
+    width: 28px;
+    height: 28px;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float 3.8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes gift {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 10px rgba(147, 51, 234, 0.8));
+    }
+    25% { transform: scale(1.1) rotate(-5deg); }
+    75% { transform: scale(1.1) rotate(5deg); }
+}
+
+@keyframes diamond {
+    0%, 100% { 
+        transform: scale(1);
+        filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.8));
+    }
+    50% { 
+        transform: scale(1.2);
+        filter: drop-shadow(0 0 20px rgba(59, 130, 246, 1));
+    }
+}
+
+@keyframes cart {
+    0%, 100% { transform: translateX(0px); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+@keyframes sparkle {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+    }
+    50% { 
+        transform: scale(1.2) rotate(180deg);
+        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 1));
+    }
+}
+
+.rewardsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.rewardCard {
+    background: linear-gradient(145deg, 
+        rgba(30, 41, 59, 0.8) 0%, 
+        rgba(51, 65, 85, 0.6) 100%) !important;
+    border: 1px solid rgba(148, 163, 184, 0.2) !important;
+    border-radius: 20px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.rewardCard:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(79, 70, 229, 0.3);
+}
+
+.rewardImage {
+    width: 100%;
+    height: 160px;
+    background: linear-gradient(135deg, 
+        rgba(79, 70, 229, 0.3) 0%, 
+        rgba(139, 92, 246, 0.3) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.rewardImage::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.rarityBadge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    backdrop-filter: blur(10px);
+}
+
+.rewardContent {
+    padding: 20px;
+}
+
+.rewardContent h4 {
+    margin: 0 0 16px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.4;
+}
+
+.buyButton {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.buyButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        transparent 100%);
+    transition: left 0.5s ease;
+}
+
+.buyButton:hover::before {
+    left: 100%;
+}
+
+.buyButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Rarity Styles */
+.common {
+    border-color: rgba(34, 197, 94, 0.4) !important;
+}
+
+.common .rarityBadge {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(21, 128, 61, 0.9));
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+}
+
+.commonButton {
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+}
+
+.rare {
+    border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+.rare .rarityBadge {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(29, 78, 216, 0.9));
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.rareButton {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.epic {
+    border-color: rgba(147, 51, 234, 0.4) !important;
+}
+
+.epic .rarityBadge {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.9), rgba(126, 34, 206, 0.9));
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+}
+
+.epicButton {
+    background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+}
+
+.legendary {
+    border-color: rgba(255, 215, 0, 0.6) !important;
+    position: relative;
+}
+
+.legendary::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ffd700, #ff6b35, #ffd700);
+    border-radius: 22px;
+    z-index: -1;
+    animation: rotate 3s linear infinite;
+}
+
+.legendary .rarityBadge {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+    color: #000000;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.legendaryButton {
+    background: linear-gradient(135deg, #ffd700 0%, #ff6b35 100%);
+    color: #000000;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.6);
+    font-weight: 700;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+} 

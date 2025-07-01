@@ -41,15 +41,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Task completion not found" }, { status: 404 });
         }
 
-        await prisma.member.update({
-            where: {
-                id: member.id,
-            },
-            data: {
-                totalPoints: member.totalPoints - taskCompletion.pointsEarned,
-                spendablePoints: member.spendablePoints - taskCompletion.pointsEarned,
-            },
-        });
+        let totalPointsToRemove = taskCompletion.pointsEarned;
 
         await prisma.taskCompletion.delete({
             where: {
@@ -75,8 +67,27 @@ export async function POST(request: Request) {
                         memberId: member.id,
                         milestoneId: milestone.id,
                     },
-                }).then((milestoneProgress) => {
+                }).then(async (milestoneProgress) => {
                     milestoneProgress.forEach(async (progress) => {
+                        if (progress.completed) {
+                            totalPointsToRemove += milestone.rewardPoints;
+                        }
+                        let lastTaskCompletionDate = null;
+                        if (progress.currentStreak > 0) {
+                            const lastTaskCompletion = await prisma.taskCompletion.findFirst({
+                                where: {
+                                    memberId: member.id,
+                                    taskId: taskCompletion.taskId,
+                                },
+                                orderBy: {
+                                    completedAt: "desc",
+                                },
+                                select: {
+                                    completedAt: true,
+                                },
+                            });
+                            lastTaskCompletionDate = lastTaskCompletion?.completedAt;
+                        }
                         await prisma.milestoneProgress.update({
                             where: {
                                 id: progress.id,
@@ -84,9 +95,10 @@ export async function POST(request: Request) {
                             data: {
                                 completed: false,
                                 currentStreak: Math.max(0, progress.currentStreak - 1),
-                                streakStartDate: null,
+                                streakStartDate: lastTaskCompletionDate,
                             },
                         });
+
                         await prisma.milestoneRequirementProgress.findMany({
                             where: {
                                 milestoneProgressId: progress.id,
@@ -107,6 +119,16 @@ export async function POST(request: Request) {
                     });
                 });
             });
+        });
+
+        await prisma.member.update({
+            where: {
+                id: member.id,
+            },
+            data: {
+                totalPoints: member.totalPoints - totalPointsToRemove,
+                spendablePoints: member.spendablePoints - totalPointsToRemove,
+            },
         });
 
         return NextResponse.json({ message: "Request removed from database" });

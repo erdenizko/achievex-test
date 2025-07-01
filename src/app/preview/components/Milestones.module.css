@@ -1,0 +1,252 @@
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+}
+
+.milestonesContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.milestoneCard {
+    background: linear-gradient(145deg, 
+        rgba(30, 41, 59, 0.8) 0%, 
+        rgba(51, 65, 85, 0.6) 100%) !important;
+    border: 2px solid rgba(148, 163, 184, 0.2) !important;
+    border-radius: 20px !important;
+    padding: 24px !important;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.milestoneCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.05) 0%, 
+        transparent 50%);
+    pointer-events: none;
+}
+
+.milestoneCard:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(79, 70, 229, 0.3);
+}
+
+.milestoneHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.difficultyBadge {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.completedBadge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(21, 128, 61, 0.9));
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.milestoneContent h4 {
+    margin: 0 0 12px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.4;
+}
+
+.description {
+    margin: 0 0 16px 0;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.progressSection {
+    margin: 16px 0;
+}
+
+.progressBar {
+    width: 100%;
+    height: 8px;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e 0%, #15803d 100%);
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+    position: relative;
+}
+
+.progressFill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 100%);
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progressText {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-align: right;
+    display: block;
+}
+
+.rewardSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: rgba(30, 41, 59, 0.4);
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.rewardLabel {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.rewardValue {
+    font-size: 1rem;
+    color: #ffffff;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Difficulty-specific styles */
+.easy {
+    border-color: rgba(34, 197, 94, 0.4) !important;
+}
+
+.easy .difficultyBadge {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(21, 128, 61, 0.9));
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+}
+
+.medium {
+    border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+.medium .difficultyBadge {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(29, 78, 216, 0.9));
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.hard {
+    border-color: rgba(147, 51, 234, 0.4) !important;
+}
+
+.hard .difficultyBadge {
+    background: linear-gradient(135deg, rgba(147, 51, 234, 0.9), rgba(126, 34, 206, 0.9));
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+}
+
+.legendary {
+    border-color: rgba(255, 215, 0, 0.6) !important;
+    position: relative;
+}
+
+.legendary::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ffd700, #ff6b35, #ffd700);
+    border-radius: 22px;
+    z-index: -1;
+    animation: rotate 3s linear infinite;
+}
+
+.legendary .difficultyBadge {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+    color: #000000;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.completed {
+    border-color: rgba(34, 197, 94, 0.6) !important;
+    box-shadow: 
+        0 0 40px rgba(34, 197, 94, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.completed .progressFill {
+    background: linear-gradient(90deg, #22c55e 0%, #15803d 100%);
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.8);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+} 

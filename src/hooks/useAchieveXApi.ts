@@ -6,12 +6,12 @@ export const useActionItems = (token: string) => {
         enabled: !!token,
         queryKey: ["action-items"],
         queryFn: () =>
-            fetch(`/api/tasks`, {
+            fetch(`/api/achievex/tasks`, {
                 headers: {
                     "Content-Type": "application/json",
                     "x-api-key": token,
                 },
-            }).then((res) => res.json()),
+            }).then((res) => res.json()).then((data) => data.data),
     });
 };
 
@@ -24,7 +24,7 @@ export const useMemberData = (memberId: string, token: string) => {
                 "Content-Type": "application/json",
                 "x-api-key": token,
             },
-        }).then((res) => res.json()),
+        }).then((res) => res.json()).then((data) => data.data),
     });
 }
 
@@ -37,7 +37,7 @@ export const useMemberMilestoneData = (memberId: string, token: string) => {
                 "Content-Type": "application/json",
                 "x-api-key": token,
             },
-        }).then((res) => res.json()),
+        }).then((res) => res.json()).then((data) => data.data),
     });
 }
 
@@ -51,7 +51,7 @@ export const useProcessActionMutation = (token: string, onSuccess: () => void) =
                     "x-api-key": token,
                 },
                 body: JSON.stringify(newData),
-            }).then((res) => res.json());
+            }).then((res) => res.json()).then((data) => data.data);
         },
         onSuccess,
     });
@@ -67,7 +67,7 @@ export const useClearMilestonesMutation = (token: string, onSuccess: () => void)
                     "x-api-key": token,
                 },
                 body: JSON.stringify({ memberId }),
-            }).then((res) => res.json());
+            }).then((res) => res.json()).then((data) => data.data);
         },
         onSuccess,
     });

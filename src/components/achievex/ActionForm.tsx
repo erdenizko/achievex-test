@@ -33,6 +33,7 @@ export function ActionForm() {
 
     const sortedActionItems = useMemo(() => {
         if (!actionItems) return [];
+        console.log("actionItems", actionItems);
         return [...actionItems].sort((a, b) => (b.milestones?.length ?? 0) - (a.milestones?.length ?? 0));
     }, [actionItems]);
 
