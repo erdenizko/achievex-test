@@ -6,7 +6,7 @@ import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
 interface LeaderboardEntry {
     rank: number;
     user: string;
-    level: string;
+    currentLevel: number;
     score: number;
     avatar?: string;
 }
@@ -15,7 +15,7 @@ interface Member {
     id: string;
     externalId: string;
     totalPoints: number;
-    currentLevel: string;
+    currentLevel: number;
 }
 
 const dummyUserNames = [
@@ -57,7 +57,7 @@ const Leaderboard = () => {
                 const formattedData = members.map((member, index) => ({
                     rank: index + 1,
                     user: dummyUserNames[index],
-                    level: member.currentLevel,
+                    currentLevel: member.currentLevel,
                     score: member.totalPoints,
                 }));
                 setLeaderboardData(formattedData);
