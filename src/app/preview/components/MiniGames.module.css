@@ -666,4 +666,170 @@
     .title {
         font-size: 3rem;
     }
+}
+
+/* Game Result Buttons */
+.gameResultButton {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.gameResultButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.gameResultButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        transparent 100%);
+    transition: left 0.5s ease;
+}
+
+.gameResultButton:hover:not(:disabled)::before {
+    left: 100%;
+}
+
+.winButton {
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+    margin-bottom: 8px;
+}
+
+.winButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.6);
+}
+
+.loseButton {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.loseButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
+}
+
+.playAgainButton {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.playAgainButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Game Result Display */
+.gameResultContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+}
+
+.gameResult {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 16px 24px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    animation: resultPulse 0.5s ease;
+}
+
+.gameResult.win {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(21, 128, 61, 0.3) 100%);
+    border: 2px solid rgba(34, 197, 94, 0.5);
+    color: #22c55e;
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+}
+
+.gameResult.lose {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3) 0%, rgba(220, 38, 38, 0.3) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.5);
+    color: #ef4444;
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+}
+
+.processingMessage {
+    color: #f59e0b;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: center;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.rewardMessage {
+    color: #22c55e;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+    animation: rewardGlow 0.8s ease;
+}
+
+/* Additional Animations */
+@keyframes resultPulse {
+    0% { 
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% { 
+        transform: scale(1.1);
+    }
+    100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes rewardGlow {
+    0% { 
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    50% { 
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 20px rgba(34, 197, 94, 1));
+    }
+    100% { 
+        transform: scale(1);
+        opacity: 1;
+        filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.8));
+    }
 } 
