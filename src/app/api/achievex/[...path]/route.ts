@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { path: string[] } }
+    { params }: { params: Promise<{ path: string[] }> }
 ) {
-    const path = params.path.join('/');
+    const { path } = await params;
     const url = new URL(request.url);
     const searchParams = url.search;
 
@@ -33,11 +33,9 @@ export async function GET(
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { path: string[] } }
-) {
-    console.log("request-----", request);
-    console.log("params-----", params);
-    const path = params.path.join('/');
+    { params }: { params: Promise<{ path: string[] }> }
+    ) {
+    const { path } = await params;
     const url = new URL(request.url);
     const searchParams = url.search;
 

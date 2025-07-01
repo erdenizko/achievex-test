@@ -112,15 +112,17 @@ const MiniGames = () => {
         if (result === 'win') {
             setIsProcessing(true);
             try {
-                const response = await fetch('/api/achievex/process', {
+                const response = await fetch('/api/process', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-api-key': 'demo-key' // Uses ACHIEVEX_DEMO_TOKEN from the catch-all route
+                        'x-api-key': process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
                     },
                     body: JSON.stringify({
-                        taskid: 'play_a_game',
-                        points: 100
+                        integrationKey: 'play_a_game',
+                        memberId: '1234567890',
+                        gameid: selectedGame.id,
+                        points: selectedGame.reward
                     })
                 });
 
