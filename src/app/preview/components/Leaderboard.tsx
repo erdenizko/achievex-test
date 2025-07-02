@@ -7,7 +7,7 @@ import { useUserData } from '@/hooks/useUserData';
 interface LeaderboardEntry {
     rank: number;
     user: string;
-    level: string;
+    currentLevel: number;
     score: number;
     avatar?: string;
     userId: string;
@@ -18,7 +18,7 @@ interface Member {
     id: string;
     externalId: string;
     totalPoints: number;
-    currentLevel: string;
+    currentLevel: number;
 }
 
 const dummyUserNames = [
@@ -61,7 +61,7 @@ const Leaderboard = () => {
                 const formattedData = members.map((member, index) => ({
                     rank: index + 1,
                     user: dummyUserNames[index],
-                    level: member.currentLevel,
+                    currentLevel: member.currentLevel,
                     score: member.totalPoints,
                     userId: member.externalId,
                     currentLevel: parseInt(member.currentLevel)
