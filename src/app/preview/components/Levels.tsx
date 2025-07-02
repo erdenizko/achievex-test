@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Levels.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
+import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface Level {
     id: string;
     name: string;
-    is_active: boolean;
-    min_points: number;
-    reach_points: number;
+    level: number;
+    pointsRequired: number;
+    imageUrl: string;
 }
 
 const levelIcons: { [key: string]: string } = {
@@ -22,6 +23,7 @@ const levelIcons: { [key: string]: string } = {
 
 const Levels = () => {
     const [levelsData, setLevelsData] = useState<Level[]>([]);
+    const { profileData } = useAchieveX();
 
     useEffect(() => {
         const fetchLevels = async () => {
@@ -34,7 +36,7 @@ const Levels = () => {
     }, []);
 
     const getSpotlightColor = (level: Level) => {
-        if (level.is_active) return 'rgba(34, 197, 94, 0.6)' as const;
+        if (profileData?.level && profileData?.currentLevel >= level.level) return 'rgba(34, 197, 94, 0.6)' as const;
         switch (level.name) {
             case 'Bronze': return 'rgba(205, 127, 50, 0.4)' as const;
             case 'Silver': return 'rgba(192, 192, 192, 0.4)' as const;
@@ -78,11 +80,21 @@ const Levels = () => {
 
             <div className={styles.levelsContainer}>
                 {levelsData.map((level, index) => {
-                    const progress = level.min_points > 0 ? (level.reach_points / level.min_points) * 100 : 0;
+                    console.log("level", level);
+                    let progress = 0;
+                    if (profileData?.currentXP) {
+                        if(profileData.currentLevel > (index + 1)) {
+                            progress = 100;
+                        } else if (profileData.currentLevel == (index + 1)) {
+                            progress = (profileData?.currentXP - levelsData[index].pointsRequired) / (levelsData[index + 1].pointsRequired - levelsData[index].pointsRequired) * 100;
+                        } else {
+                            progress = 0;
+                        }
+                    }
                     return (
                         <SpotlightCard
                             key={level.id}
-                            className={`${styles.levelCard} ${level.is_active ? styles.active : ''} ${styles[level.name.toLowerCase()]}`}
+                            className={`${styles.levelCard} ${profileData?.level && profileData?.currentLevel == level.level ? styles.active : ''} ${styles[level.name.toLowerCase()]}`}
                             spotlightColor={getSpotlightColor(level)}
                         >
                             <div className={styles.levelIcon}>
@@ -96,7 +108,7 @@ const Levels = () => {
                                 ></div>
                             </div>
                             <span className={styles.progressText}>{progress.toFixed(0)}%</span>
-                            {!level.is_active && index > 0 && (
+                            {profileData?.level && (profileData?.currentLevel < index + 1) && (
                                 <div className={styles.lockIcon}>🔒</div>
                             )}
                         </SpotlightCard>
