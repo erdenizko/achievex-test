@@ -7,9 +7,10 @@ interface Milestone {
     id: string;
     name: string;
     description?: string;
-    points: number;
+    rewardPoints: number;
     is_completed: boolean;
     progress: number;
+    imageUrl: string;
 }
 
 const Milestones = () => {
@@ -19,6 +20,7 @@ const Milestones = () => {
         const fetchMilestones = async () => {
             const response = await fetch(`/api/achievex/milestones`);
             const data = (await response.json()).data as Milestone[];
+            console.log(data);
             setMilestonesData(data);
         };
 
@@ -32,7 +34,34 @@ const Milestones = () => {
 
     return (
         <div>
-            <h2 className={styles.title}>🏆 Milestone Achievements</h2>
+            <div className={styles.titleSection}>
+                <div className={styles.titleContainer}>
+                    <div className={styles.titleIcons}>
+                        <div className={styles.iconWrapper}>
+                            <span className={styles.levelIcon1}>🏆</span>
+                        </div>
+                        <div className={styles.iconWrapper}>
+                            <span className={styles.levelIcon2}>⭐</span>
+                        </div>
+                        <div className={styles.iconWrapper}>
+                            <span className={styles.levelIcon3}>🎖️</span>
+                        </div>
+                    </div>
+                    <h2 className={styles.title}>
+                        <span className={styles.titleMain}>Milestone</span>
+                        <span className={styles.titleAccent}>Achievements</span>
+                    </h2>
+                    <div className={styles.titleSubtext}>
+                        <span className={styles.subtextIcon}>🚀</span>
+                        Complete challenges to earn exclusive rewards
+                    </div>
+                </div>
+                <div className={styles.titleDecorations}>
+                    <div className={styles.decoration1}></div>
+                    <div className={styles.decoration2}></div>
+                    <div className={styles.decoration3}></div>
+                </div>
+            </div>
             <div className={styles.milestonesContainer}>
                 {milestonesData.map(milestone => (
                     <SpotlightCard
@@ -47,24 +76,15 @@ const Milestones = () => {
                         </div>
 
                         <div className={styles.milestoneContent}>
+                            <img className={styles.milestoneImage} src={milestone.imageUrl} alt={milestone.name}/>
                             <h4>{milestone.name}</h4>
                             {milestone.description && (
                                 <p className={styles.description}>{milestone.description}</p>
                             )}
 
-                            <div className={styles.progressSection}>
-                                <div className={styles.progressBar}>
-                                    <div
-                                        className={styles.progressFill}
-                                        style={{ width: `${milestone.progress}%` }}
-                                    ></div>
-                                </div>
-                                <span className={styles.progressText}>{milestone.progress}%</span>
-                            </div>
-
                             <div className={styles.rewardSection}>
                                 <span className={styles.rewardLabel}>🎁 Reward:</span>
-                                <span className={styles.rewardValue}>{milestone.points} pt</span>
+                                <span className={styles.rewardValue}>{milestone.rewardPoints} 💎</span>
                             </div>
                         </div>
                     </SpotlightCard>

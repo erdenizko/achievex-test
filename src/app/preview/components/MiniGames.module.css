@@ -19,9 +19,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.05) 0%, 
-        transparent 50%);
+    background: rgba(0, 0, 0, 0.3) !important;
     pointer-events: none;
 }
 
@@ -208,9 +206,7 @@
 }
 
 .gameCard {
-    background: linear-gradient(145deg, 
-        rgba(30, 41, 59, 0.8) 0%, 
-        rgba(51, 65, 85, 0.6) 100%) !important;
+    background: rgba(0, 0, 0, 0.3) !important;
     border: 1px solid rgba(148, 163, 184, 0.2) !important;
     border-radius: 20px !important;
     padding: 0 !important;
