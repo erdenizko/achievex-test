@@ -106,7 +106,7 @@ const Tournaments: React.FC<TournamentsProps> = ({ filter, showTitle = true }) =
             )}
 
             <div className={styles.tournamentsGrid}>
-                {filteredTournaments.map(tournament => {
+                {filteredTournaments && filteredTournaments.length > 0 && filteredTournaments.map(tournament => {
                     const status = getEventStatus(tournament);
                     return (
                         <SpotlightCard
