@@ -23,11 +23,15 @@ const levelIcons: { [key: string]: string } = {
 
 const Levels = () => {
     const [levelsData, setLevelsData] = useState<Level[]>([]);
-    const { profileData } = useAchieveX();
+    const { profileData, token } = useAchieveX();
 
     useEffect(() => {
         const fetchLevels = async () => {
-            const response = await fetch(`/api/achievex/levels`);
+            const response = await fetch(`/api/achievex/levels`, {
+                headers: {
+                    'x-api-key': token,
+                },
+            });
             const data = (await response.json()).data as Level[];
             setLevelsData(data);
         };
@@ -94,11 +98,11 @@ const Levels = () => {
                     return (
                         <SpotlightCard
                             key={level.id}
-                            className={`${styles.levelCard} ${profileData?.level && profileData?.currentLevel == level.level ? styles.active : ''} ${styles[level.name.toLowerCase()]}`}
+                            className={`${styles.levelCard} ${profileData?.currentLevel && profileData?.currentLevel > level.level ? styles.passed : ''} ${profileData?.level && profileData?.currentLevel == level.level ? styles.active : ''} ${styles[level.name.toLowerCase()]}`}
                             spotlightColor={getSpotlightColor(level)}
                         >
                             <div className={styles.levelIcon}>
-                                {levelIcons[level.name] || '🏆'}
+                                {level.imageUrl ? <img src={level.imageUrl} alt={level.name} /> : levelIcons[level.name] || '🏆'}
                             </div>
                             <h4>{level.name}</h4>
                             <div className={styles.progressBar}>

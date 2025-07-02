@@ -257,6 +257,7 @@
     animation: pulse 2s ease-in-out infinite;
 }
 
+
 .milestoneContent h4 {
     margin: 0 0 12px 0;
     font-size: 1.2rem;
@@ -405,11 +406,41 @@
     animation: pulse 2s ease-in-out infinite;
 }
 
+.streakContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+}
+
+.streakDot {
+    flex: 1;
+    height: 12px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.streakDot.completed {
+    background: rgba(34, 197, 94, 0.4);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    position: relative;
+}
+
 .completed {
-    border-color: rgba(34, 197, 94, 0.6) !important;
+    border-color: rgba(34, 197, 94, 0.2) !important;
     box-shadow: 
         0 0 40px rgba(34, 197, 94, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.completed::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(25, 76, 44, 0.1), rgba(53, 65, 58, 0.1));
 }
 
 .completed .progressFill {

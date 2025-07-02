@@ -9,7 +9,7 @@ import {
     useProcessActionMutation,
     useClearMilestonesMutation
 } from '@/hooks/useAchieveXApi';
-import { ActionItem, FormData, MemberMilestoneResponse, MemberResponse } from '@/lib/types';
+import { ActionItem, FormData, MemberMilestoneResponse, MemberResponse, Milestone } from '@/lib/types';
 import { useUserData } from '@/hooks/useUserData';
 
 export interface ProfileData {
@@ -70,12 +70,12 @@ interface AchieveXContextType {
     handleCopyResponse: () => void;
     handleClearMilestone: () => void;
     onOpenClearMilestoneDialog: (isOpen: boolean) => void;
+    getMilestones: () => Promise<Milestone[]>;
 }
 
 const AchieveXContext = createContext<AchieveXContextType | undefined>(undefined);
 
 export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
-    const [memberId, setMemberId] = useState("");
     const [integrationKey, setIntegrationKey] = useState("");
     const [points, setPoints] = useState("");
     const [timestamp, setTimestamp] = useState("");
@@ -85,7 +85,13 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
     const [isShowRequestPreview, setIsShowRequestPreview] = useState(false);
     const [password, setPassword] = useState("");
     const [showContent, setShowContent] = useState(false);
-    const [token, setToken] = useState("");
+    const [memberId, setMemberId] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('achieveXMemberId') || "";
+        }
+        return "";
+    });
+    const [token, setToken] = useState(localStorage.getItem('achieveXToken') || process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || "");
     const [copiedRequest, setCopiedRequest] = useState(false);
     const [copiedResponse, setCopiedResponse] = useState(false);
     const [isClearMilestoneDialogOpen, setIsClearMilestoneDialogOpen] = useState(false);
@@ -139,7 +145,7 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
                 try {
                     const response = await fetch(`/api/members/external/${userData?.id}`, {
                         headers: {
-                            'x-api-key': process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
+                            'x-api-key': token || process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
                         }
                     });
                     if (response.ok) {
@@ -255,6 +261,16 @@ Body: ${JSON.stringify(requestBody, null, 2)}`;
         }
     }
 
+    const getMilestones = async () => {
+        const response = await fetch(`/api/achievex/milestones`, {
+            headers: {
+                'x-api-key': token || process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
+            }
+        });
+        const data = await response.json();
+        return data.data;
+    }
+
     const value = {
         memberId, setMemberId,
         integrationKey, setIntegrationKey,
@@ -293,7 +309,8 @@ Body: ${JSON.stringify(requestBody, null, 2)}`;
         handleClearMilestone,
         onOpenClearMilestoneDialog,
         profileData,
-        refetchProfileData
+        refetchProfileData,
+        getMilestones
     };
 
     return <AchieveXContext.Provider value={value}>{children}</AchieveXContext.Provider>;

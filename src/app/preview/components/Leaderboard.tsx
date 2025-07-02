@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './Leaderboard.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
 import { useUserData } from '@/hooks/useUserData';
+import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface LeaderboardEntry {
     rank: number;
@@ -47,11 +48,15 @@ const dummyUserNames = [
 const Leaderboard = () => {
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const { userData } = useUserData();
-
+    const { token } = useAchieveX();
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                const response = await fetch('/api/achievex/members?sortBy=totalPoints');
+                const response = await fetch('/api/achievex/members?sortBy=totalPoints', {
+                    headers: {
+                        'x-api-key': token,
+                    },
+                });
                 if (!response.ok) {
                     throw new Error('Failed to fetch leaderboard');
                 }
@@ -150,8 +155,8 @@ const Leaderboard = () => {
                         </div>
 
                         <div className={styles.scoreSection}>
-                            <div className={styles.scoreValue}>{entry.score}</div>
-                            <div className={styles.scoreLabel}>pts</div>
+                            <div className={styles.scoreValue}>{Math.round(entry.score)}</div>
+                            <div className={styles.scoreLabel}>points</div>
                         </div>
 
                         {entry.rank <= 3 && (
@@ -166,23 +171,23 @@ const Leaderboard = () => {
                 <div className={styles.prizesList}>
                     <div className={styles.prizeItem}>
                         <span className={styles.prizeRank}>🥇 1st</span>
-                        <span className={styles.prizeValue}>100 Pts</span>
+                        <span className={styles.prizeValue}>100 Points</span>
                     </div>
                     <div className={styles.prizeItem}>
                         <span className={styles.prizeRank}>🥈 2nd</span>
-                        <span className={styles.prizeValue}>75 Pts</span>
+                        <span className={styles.prizeValue}>75 Points</span>
                     </div>
                     <div className={styles.prizeItem}>
                         <span className={styles.prizeRank}>🥉 3rd</span>
-                        <span className={styles.prizeValue}>50 Pts</span>
+                        <span className={styles.prizeValue}>50 Points</span>
                     </div>
                     <div className={styles.prizeItem}>
                         <span className={styles.prizeRank}>4th</span>
-                        <span className={styles.prizeValue}>25 Pts</span>
+                        <span className={styles.prizeValue}>25 Points</span>
                     </div>
                     <div className={styles.prizeItem}>
                         <span className={styles.prizeRank}>5th</span>
-                        <span className={styles.prizeValue}>10 Pts</span>
+                        <span className={styles.prizeValue}>10 Points</span>
                     </div>
                 </div>
             </div>

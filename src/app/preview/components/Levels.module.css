@@ -218,6 +218,12 @@
     overflow: hidden;
 }
 
+.passed {
+    opacity: 0.2 !important;
+    filter: grayscale(100%) !important;
+    pointer-events: none !important;
+}
+
 .levelCard::before {
     content: '';
     position: absolute;
@@ -327,6 +333,10 @@
 .silver .levelIcon {
     background: linear-gradient(135deg, rgba(192, 192, 192, 0.3), rgba(156, 163, 175, 0.3));
     border-color: rgba(192, 192, 192, 0.5);
+}
+
+.unranked {
+    border-color: rgba(148, 163, 184, 0.4) !important;
 }
 
 .gold {

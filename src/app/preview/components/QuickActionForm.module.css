@@ -1,0 +1,32 @@
+.formContainer {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.title {
+    font-weight: 600;
+    color: #fff;
+    font-size: 16px;
+}
+
+.inputRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.inputRow > div:first-child {
+    flex-grow: 1;
+}
+
+.cancelButtonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+} 

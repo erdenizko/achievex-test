@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Rewards.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
+import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface Reward {
     id: string;
@@ -13,10 +14,14 @@ interface Reward {
 
 const Rewards = () => {
     const [rewardsData, setRewardsData] = useState<Reward[]>([]);
-
+    const { token } = useAchieveX();
     useEffect(() => {
         const fetchRewards = async () => {
-            const response = await fetch(`/api/achievex/rewards`);
+            const response = await fetch(`/api/achievex/rewards`, {
+                headers: {
+                    'x-api-key': token,
+                },
+            });
             const data = (await response.json()).data as Reward[];
             setRewardsData(data);
         };
@@ -74,7 +79,7 @@ const Rewards = () => {
                         <div className={styles.rewardContent}>
                             <h4>{reward.name}</h4>
                             <button className={`${styles.buyButton}`}>
-                                Buy for {reward.pointsCost} points  💎 
+                                Buy for {reward.pointsCost} points
                             </button>
                         </div>
                     </SpotlightCard>

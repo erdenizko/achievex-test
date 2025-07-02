@@ -6,6 +6,11 @@ export async function GET(
 ) {
     const { path } = await params;
     const url = new URL(request.url);
+    console.log("path-----", path);
+    console.log("request url-----", request.url);
+    console.log("request x-api-key-----", request.headers.get('x-api-key'));
+    const token = request.headers.get('x-api-key') || process.env.ACHIEVEX_DEMO_TOKEN || '';
+    console.log("token-----", token);
     const searchParams = url.search;
 
     const fullUrl = `${process.env.ACHIEVEX_API_URL}/${path}${searchParams}`;
@@ -14,7 +19,7 @@ export async function GET(
         const response = await fetch(fullUrl, {
             headers: {
                 'Content-Type': 'application/json',
-                'x-api-key': request.headers.get('x-api-key') || process.env.ACHIEVEX_DEMO_TOKEN || '',
+                'x-api-key': token,
             },
         });
 

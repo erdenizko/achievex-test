@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import styles from './Overview.module.css';
 import Tournaments from './Tournaments';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
+import { useUserData } from '@/hooks/useUserData';
+import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface Game {
     id: number;
@@ -22,7 +24,7 @@ const featuredGames: Game[] = [
         description: 'Test your memory skills by matching pairs of cards',
         type: 'Puzzle',
         difficulty: 'easy',
-        reward: 50,
+        reward: 1000,
         icon: '🧠',
         players: 1234
     },
@@ -32,19 +34,19 @@ const featuredGames: Game[] = [
         description: 'Spin for a chance to win amazing prizes',
         type: 'Luck',
         difficulty: 'easy',
-        reward: 100,
+        reward: 1000,
         icon: '🎰',
         players: 5678
     },
     {
-        id: 4,
-        title: 'Number Puzzle',
-        description: 'Solve mathematical puzzles to earn points',
-        type: 'Math',
-        difficulty: 'hard',
-        reward: 150,
-        icon: '🔢',
-        players: 987
+        id: 3,
+        title: 'Word Hunt',
+        description: 'Find hidden words in the letter grid',
+        type: 'Word',
+        difficulty: 'medium',
+        reward: 5000,
+        icon: '📝',
+        players: 2341
     },
 ];
 
@@ -52,6 +54,10 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
     const [activeTab] = useState<'all' | 'started' | 'finished'>('all');
     const [selectedGame, setSelectedGame] = useState<Game | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const { userData } = useUserData();
+    const { token, refetchProfileData } = useAchieveX();
 
     const getSpotlightColor = (difficulty: string) => {
         switch (difficulty) {
@@ -65,11 +71,49 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
     const openGameModal = (game: Game) => {
         setSelectedGame(game);
         setIsModalOpen(true);
+        setGameResult(null);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedGame(null);
+        setGameResult(null);
+        setIsProcessing(false);
+    };
+
+    const handleGameResult = async (result: 'win' | 'lose') => {
+        if (!selectedGame || isProcessing) return;
+        
+        setGameResult(result);
+        
+        if (result === 'win') {
+            setIsProcessing(true);
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': token || process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
+                    },
+                    body: JSON.stringify({
+                        integrationKey: 'transaction_added',
+                        memberId: userData?.id,
+                        gameid: selectedGame.id,
+                        points: selectedGame.reward
+                    })
+                });
+
+                if (response.ok) {
+                    refetchProfileData();
+                } else {
+                    console.error('Failed to process game result');
+                }
+            } catch (error) {
+                console.error('Error processing game result:', error);
+            } finally {
+                setIsProcessing(false);
+            }
+        }
     };
 
     return (
@@ -157,18 +201,17 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
                                     </div>
                                 </div>
                                 <div className={styles.gameContent}>
-                                    <h4 className={styles.gameTitle}>{game.title}</h4>
-                                    <p className={styles.gameDescription}>{game.description}</p>
-                                    <div className={styles.gameStats}>
+                                    <div className={styles.topContainerGameCard}>
+                                        <h4 className={styles.gameTitle}>{game.title}</h4>
                                         <div className={styles.statItem}>
                                             <span className={styles.gameCardStatIcon}>🏷️</span>
                                             <span className={styles.statValue}>{game.type}</span>
                                         </div>
-                                        <div className={styles.statItem}>
-                                            <span className={styles.gameCardStatIcon}>💎</span>
-                                            <span className={styles.statValue}>{game.reward} pts</span>
-                                        </div>
                                     </div>
+                                    <p className={styles.gameDescription}>{game.description}</p>
+                                    <button className={`${styles.playButton} ${styles[`${game.difficulty}Button`]}`}>
+                                        🎮 Play & Earn {game.reward / 100} points
+                                    </button>
                                 </div>
                             </SpotlightCard>
                         </div>
@@ -202,8 +245,52 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
                                 <div className={styles.gameScreen}>
                                     <div className={styles.gameScreenContent}>
                                         <div className={styles.gameScreenIcon}>{selectedGame.icon}</div>
-                                        <p>Game will load here...</p>
-                                        <div className={styles.loadingSpinner}></div>
+                                        <div className={styles.gameScreenDescription}>{selectedGame.description}</div>
+                                        {gameResult ? (
+                                            <div className={styles.gameResultContainer}>
+                                                <div className={`${styles.gameResult} ${styles[gameResult]}`}>
+                                                    {gameResult === 'win' ? '🎉 You Won!' : '😔 You Lost!'}
+                                                </div>
+                                                {gameResult === 'win' && isProcessing && (
+                                                    <div className={styles.processingMessage}>
+                                                        Processing reward...
+                                                    </div>
+                                                )}
+                                                {gameResult === 'win' && !isProcessing && (
+                                                    <div className={styles.rewardMessage}>
+                                                        {selectedGame.reward / 100} points earned!
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : null}
+
+                                        <div className={styles.modalActions}>
+                                            {!gameResult ? (
+                                                <>
+                                                    <button 
+                                                        className={`${styles.gameResultButton} ${styles.winButton}`}
+                                                        onClick={() => handleGameResult('win')}
+                                                        disabled={isProcessing}
+                                                    >
+                                                        🏆 Win
+                                                    </button>
+                                                    <button 
+                                                        className={`${styles.gameResultButton} ${styles.loseButton}`}
+                                                        onClick={() => handleGameResult('lose')}
+                                                        disabled={isProcessing}
+                                                    >
+                                                        😞 Lose
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button 
+                                                    className={`${styles.playAgainButton} ${styles[`${selectedGame.difficulty}Button`]}`}
+                                                    onClick={() => setGameResult(null)}
+                                                >
+                                                    🎮 Play Again
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -220,20 +307,12 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
                                     </div>
                                     <div className={styles.detailRow}>
                                         <span>Reward:</span>
-                                        <span>{selectedGame.reward} points</span>
+                                        <span>{selectedGame.reward / 100} points</span>
                                     </div>
                                     <div className={styles.detailRow}>
                                         <span>Players:</span>
                                         <span>{selectedGame.players.toLocaleString()}</span>
                                     </div>
-                                </div>
-                                <div className={styles.modalActions}>
-                                    <button className={`${styles.startGameButton} ${styles[`${selectedGame.difficulty}Button`]}`}>
-                                        🚀 Start Game
-                                    </button>
-                                    <button className={styles.watchAdButton}>
-                                        📺 Watch Ad for 2x Rewards
-                                    </button>
                                 </div>
                             </div>
                         </div>

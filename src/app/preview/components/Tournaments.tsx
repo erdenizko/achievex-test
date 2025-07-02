@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Tournaments.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
+import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface Tournament {
     id: string;
@@ -36,10 +37,14 @@ const getEventStatus = (event: Tournament): 'started' | 'finished' | 'upcoming' 
 
 const Tournaments: React.FC<TournamentsProps> = ({ filter, showTitle = true }) => {
     const [tournamentsData, setTournamentsData] = useState<Tournament[]>([]);
-
+    const { token } = useAchieveX();
     useEffect(() => {
         const fetchTournaments = async () => {
-            const response = await fetch(`/api/achievex/events`);
+            const response = await fetch(`/api/achievex/events`, {
+                headers: {
+                    'x-api-key': token,
+                },
+            });
             const jsonResponse = await response.json();
             const data = jsonResponse.data as Tournament[];
             setTournamentsData(data);

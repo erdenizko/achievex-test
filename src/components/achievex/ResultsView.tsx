@@ -86,10 +86,10 @@ export function ResultsView() {
                     </div>
                     <div className="flex space-x-6">
                         <div className="animate__animated animate__fadeInLeft w-1/2">
-                            {beforeMemberData && <MemberDataPreview title="Member Data (Before)" data={beforeMemberData.data} milestoneData={beforeMilestoneData?.data} />}
+                            {beforeMemberData && <MemberDataPreview title="Member Data (Before)" data={beforeMemberData.data} milestoneData={beforeMilestoneData ?? undefined} />}
                         </div>
                         <div className="animate__animated animate__fadeInRight w-1/2">
-                            {memberData && <MemberDataPreview title="Member Data (After)" data={memberData.data} milestoneData={memberMilestoneData?.data} />}
+                            {memberData && <MemberDataPreview title="Member Data (After)" data={memberData.data} milestoneData={memberMilestoneData} />}
                         </div>
                     </div>
                 </div>

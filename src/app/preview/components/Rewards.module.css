@@ -322,7 +322,6 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
     background: linear-gradient(120deg, 
         rgba(0, 0, 0, 0.2) 0%, 

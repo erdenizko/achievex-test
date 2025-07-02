@@ -56,8 +56,22 @@ export interface MilestoneData {
   otherMilestones: Milestone[];
 }
 
+
+export interface MemberMilestone {
+  id: string;
+  name: string;
+  description: string | null;
+  completed: boolean;
+  rewardPoints: number;
+  isStreakBased: boolean;
+  progress: Progress[];
+  imageUrl: string | null;
+  isActive: boolean;
+  streakInfo: StreakInfo | null;
+}
 export interface MemberMilestoneResponse {
-  data: MilestoneData;
+  memberMilestones: MemberMilestone[];
+  otherMilestones: MemberMilestone[];
 }
 
 export interface FormData {

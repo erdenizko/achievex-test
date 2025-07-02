@@ -22,7 +22,7 @@ const gamesData: Game[] = [
         description: 'Test your memory skills by matching pairs of cards',
         type: 'Puzzle',
         difficulty: 'easy',
-        reward: 10,
+        reward: 1000,
         icon: '🧠',
         players: 1234
     },
@@ -32,7 +32,7 @@ const gamesData: Game[] = [
         description: 'Spin for a chance to win amazing prizes',
         type: 'Luck',
         difficulty: 'easy',
-        reward: 10,
+        reward: 1000,
         icon: '🎰',
         players: 5678
     },
@@ -42,7 +42,7 @@ const gamesData: Game[] = [
         description: 'Find hidden words in the letter grid',
         type: 'Word',
         difficulty: 'medium',
-        reward: 10,
+        reward: 5000,
         icon: '📝',
         players: 2341
     },
@@ -52,7 +52,7 @@ const gamesData: Game[] = [
         description: 'Solve mathematical puzzles to earn points',
         type: 'Math',
         difficulty: 'hard',
-        reward: 10,
+        reward: 10000,
         icon: '🔢',
         players: 987
     },
@@ -62,7 +62,7 @@ const gamesData: Game[] = [
         description: 'Match colors in sequence as fast as you can',
         type: 'Reaction',
         difficulty: 'medium',
-        reward: 10,
+        reward: 5000,
         icon: '🎨',
         players: 3456
     },
@@ -72,7 +72,7 @@ const gamesData: Game[] = [
         description: 'Navigate through mazes to find hidden treasures',
         type: 'Adventure',
         difficulty: 'hard',
-        reward: 10,
+        reward: 10000,
         icon: '💰',
         players: 1876
     },
@@ -84,6 +84,7 @@ const MiniGames = () => {
     const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const { userData } = useUserData();
+    const { token } = useAchieveX();
 
     const { refetchProfileData } = useAchieveX();
 
@@ -121,10 +122,10 @@ const MiniGames = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-api-key': process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
+                        'x-api-key': token || process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
                     },
                     body: JSON.stringify({
-                        integrationKey: 'play_a_game',
+                        integrationKey: 'transaction_added',
                         memberId: userData?.id,
                         gameid: selectedGame.id,
                         points: selectedGame.reward
@@ -204,7 +205,7 @@ const MiniGames = () => {
                                     </div>
                                 </div>
                                 <button className={`${styles.playButton} ${styles[`${game.difficulty}Button`]}`}>
-                                    🎮 Play & Earn 10 pts
+                                    🎮 Play & Earn {game.reward / 100} points
                                 </button>
                             </div>
                         </SpotlightCard>
@@ -239,7 +240,7 @@ const MiniGames = () => {
                                                 )}
                                                 {gameResult === 'win' && !isProcessing && (
                                                     <div className={styles.rewardMessage}>
-                                                        {selectedGame.reward} points earned!
+                                                        {selectedGame.reward / 100} points earned!
                                                     </div>
                                                 )}
                                             </div>
@@ -288,7 +289,7 @@ const MiniGames = () => {
                                     </div>
                                     <div className={styles.detailRow}>
                                         <span>Reward:</span>
-                                        <span>{selectedGame.reward} points</span>
+                                        <span>{selectedGame.reward / 100} points</span>
                                     </div>
                                     <div className={styles.detailRow}>
                                         <span>Players:</span>

@@ -2,35 +2,48 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Milestones.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
+import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface Milestone {
     id: string;
     name: string;
     description?: string;
     rewardPoints: number;
-    is_completed: boolean;
-    progress: number;
+    isStreakBased: boolean;
+    streakDuration: number;
+    requirements: {
+        data: string;
+        integrationKey: string;
+        operator: string;
+        repeatCount: number;
+        targetValue: string;
+        taskId: string;
+        taskName: string;
+    }[];
+    isActive: boolean;
     imageUrl: string;
 }
 
 const Milestones = () => {
     const [milestonesData, setMilestonesData] = useState<Milestone[]>([]);
+    const { token, memberMilestoneData, memberId } = useAchieveX();
+    console.log('memberId', memberId);
 
+    console.log(memberMilestoneData?.memberMilestones);
     useEffect(() => {
         const fetchMilestones = async () => {
-            const response = await fetch(`/api/achievex/milestones`);
+            const response = await fetch(`/api/achievex/milestones`, {
+                headers: {
+                    'x-api-key': token,
+                },
+            });
             const data = (await response.json()).data as Milestone[];
-            console.log(data);
+            console.log('FROM API',data);
             setMilestonesData(data);
         };
 
         fetchMilestones();
     }, []);
-
-    const getSpotlightColor = (milestone: Milestone) => {
-        if (milestone.is_completed) return 'rgba(34, 197, 94, 0.6)' as const;
-        return 'rgba(148, 163, 184, 0.4)' as const;
-    };
 
     return (
         <div>
@@ -63,32 +76,50 @@ const Milestones = () => {
                 </div>
             </div>
             <div className={styles.milestonesContainer}>
-                {milestonesData.map(milestone => (
+                {milestonesData.map(milestone => {
+                    const milestoneData = memberMilestoneData?.memberMilestones.find(m => m.id === milestone.id);
+                    const isCompleted = milestoneData ? true : false;
+                    return (
                     <SpotlightCard
                         key={milestone.id}
-                        className={`${styles.milestoneCard} ${milestone.is_completed ? styles.completed : ''}`}
-                        spotlightColor={getSpotlightColor(milestone)}
+                        className={`${styles.milestoneCard} ${isCompleted ? styles.completed : ''}`}
+                        spotlightColor={isCompleted ? 'rgba(34, 197, 94, 0.6)' : 'rgba(148, 163, 184, 0.4)'}
                     >
-                        <div className={styles.milestoneHeader}>
-                            {milestone.is_completed && (
-                                <div className={styles.completedBadge}>✅ COMPLETED</div>
-                            )}
-                        </div>
-
                         <div className={styles.milestoneContent}>
-                            <img className={styles.milestoneImage} src={milestone.imageUrl} alt={milestone.name}/>
+                            {milestone.imageUrl && (
+                                <img className={styles.milestoneImage} src={milestone.imageUrl} alt={milestone.name}/>
+                            )}
+                            {!milestone.imageUrl && (
+                                <img className={styles.milestoneImage} src="/images/placeholder.svg" alt={milestone.name}/>
+                            )}
                             <h4>{milestone.name}</h4>
                             {milestone.description && (
                                 <p className={styles.description}>{milestone.description}</p>
                             )}
 
+                            {milestone.isStreakBased && (
+                                <div className={styles.streakContainer}>
+                                    {Array.from({length: milestone.streakDuration}).map((_, index) => (
+                                        <div className={`${styles.streakDot} ${(milestoneData?.streakInfo?.currentStreak || 0) <= index ? styles.completed : ''}`} key={index}></div>
+                                    ))}
+                                </div>
+                            )}
+
                             <div className={styles.rewardSection}>
-                                <span className={styles.rewardLabel}>🎁 Reward:</span>
-                                <span className={styles.rewardValue}>{milestone.rewardPoints} 💎</span>
+                                {!isCompleted && (
+                                    <>
+                                        <span className={styles.rewardLabel}>🎁 Reward:</span>
+                                        <span className={styles.rewardValue}>{milestone.rewardPoints} Points</span>
+                                    </>
+                                )}
+                                {isCompleted && (
+                                    <div className={styles.completedBadge}>✅ COMPLETED</div>
+                                )}
                             </div>
-                        </div>
-                    </SpotlightCard>
-                ))}
+                            </div>
+                        </SpotlightCard>
+                    );
+                })}
             </div>
         </div>
     );

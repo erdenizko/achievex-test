@@ -21,25 +21,87 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useAchieveX } from '@/contexts/AchieveXContext';
-import { useDepositMutation } from '@/hooks/useAchieveXApi';
+import { useDepositMutation, useClaimMilestoneMutation, useClearMilestoneMutation, useAddDiamondsMutation, useAddPointsMutation } from '@/hooks/useAchieveXApi';
+import QuickActionForm from './components/QuickActionForm';
+import { Milestone } from '@/lib/types';
+import { ChevronsDownIcon, ZapIcon } from 'lucide-react';
+import { useEffect } from 'react';
+
+type ActiveQuickMenu = 'settoken' | 'setMemberId' | 'deposit' | 'claim' | 'clear' | 'addDiamonds' | 'addPoints' | null;
 
 const PreviewPage = () => {
     const [activeView, setActiveView] = useState('Overview');
+    const [activeQuickMenu, setActiveQuickMenu] = useState<ActiveQuickMenu>(null);
+    const [isQuickMenuVisible, setIsQuickMenuVisible] = useState(false);
     const navItems = ['Overview', 'Mini Games', 'Milestones', 'Leaderboard', 'Events', 'Levels', 'Rewards'];
     
     // User data management
     const { userData, isLoading, saveUserData, hasUserData } = useUserData();
     const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState('');
-    const { profileData, token } = useAchieveX();
+    const { profileData, token, setToken, memberId, setMemberId, memberMilestoneData, getMilestones } = useAchieveX();
+
+    const [milestones, setMilestones] = useState<Milestone[]>([]);
+    useEffect(() => {
+        getMilestones().then((data) => {
+            console.log(data);
+            setMilestones(data);
+        });
+    }, []);
 
     const depositMutation = useDepositMutation(token, () => {
         console.log("Deposit successful");
+        setActiveQuickMenu(null);
     });
 
-    const handleDeposit = () => {
+    const claimMilestoneMutation = useClaimMilestoneMutation(token, () => {
+        console.log("Milestone claimed successfully");
+        setActiveQuickMenu(null);
+    });
+
+    const clearMilestoneMutation = useClearMilestoneMutation(token, () => {
+        console.log("Milestone cleared successfully");
+        setActiveQuickMenu(null);
+    });
+
+    const addDiamondsMutation = useAddDiamondsMutation(token, () => {
+        console.log("Diamonds added successfully");
+        setActiveQuickMenu(null);
+    });
+
+    const addPointsMutation = useAddPointsMutation(token, () => {
+        console.log("Points added successfully");
+        setActiveQuickMenu(null);
+    });
+
+    const handleDeposit = (amount: number) => {
         if (userData?.id) {
-            depositMutation.mutate({ memberId: userData.id, amount: 100 }); 
+            console.log("Deposit amount: ", amount);
+            depositMutation.mutate({ memberId: memberId, amount, integrationKey: 'deposit_succeeded' }); 
+        }
+    };
+
+    const handleClaimMilestone = (milestoneId: string) => {
+        if (userData?.id) {
+            claimMilestoneMutation.mutate({ memberId: memberId, milestoneId });
+        }
+    };
+
+    const handleClearMilestone = (milestoneId: string) => {
+        if (userData?.id) {
+            clearMilestoneMutation.mutate({ memberId: memberId, milestoneId });
+        }
+    };
+
+    const handleAddDiamonds = (amount: number) => {
+        if (userData?.id) {
+            addDiamondsMutation.mutate({ memberId: memberId, amount });
+        }
+    };
+
+    const handleAddPoints = (amount: number) => {
+        if (userData?.id) {
+            addPointsMutation.mutate({ memberId: memberId, amount });
         }
     };
 
@@ -89,6 +151,18 @@ const PreviewPage = () => {
         }
     };
 
+    const handleSetToken = (token: string) => {
+        setToken(token);
+        localStorage.setItem('achieveXToken', token);
+        setActiveQuickMenu(null);
+    }
+
+    const handleSetMemberId = (memberId: string) => {
+        setMemberId(memberId);
+        localStorage.setItem('achieveXMemberId', memberId);
+        setActiveQuickMenu(null);
+    }
+
     const renderContent = () => {
         switch (activeView) {
             case 'Overview':
@@ -113,6 +187,13 @@ const PreviewPage = () => {
     const getProgressPercentage = () => {
         return (userProfile.currentXP / userProfile.nextLevelXP) * 100;
     };
+
+    const allMilestones = [
+        ...(memberMilestoneData?.memberMilestones || []),
+        ...(memberMilestoneData?.otherMilestones || [])
+    ];
+    console.log(allMilestones);
+    const milestoneOptions = allMilestones.map((m: Milestone) => ({ value: m.id, label: m.name }));
 
     return (
         <>
@@ -179,7 +260,7 @@ const PreviewPage = () => {
                             <div className={styles.userInfo}>
                                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', justifyContent: 'space-between', width: '100%', marginBottom: '10px', padding: '6px 16px', background: 'rgba(0, 0, 0, 0.1)', borderRadius: '8px'}}>
                                     <h3 className={styles.username}>{userProfile.name} </h3>
-                                    <span className={styles.diamonds}>{userProfile.totalPoints} 💎</span>
+                                    <span className={styles.diamonds}>{Math.round(userProfile.totalPoints)} Points</span>
                                 </div>
                                 <div className={styles.levelBadge}>Level: {userProfile.level}</div>
                             </div>
@@ -188,7 +269,7 @@ const PreviewPage = () => {
                                 <div className={styles.progressHeader}>
                                     <span className={styles.progressLabel}>Level Progress</span>
                                     <span className={styles.progressStats}>
-                                        {userProfile.currentXP}/{userProfile.nextLevelXP} XP
+                                        {Math.round(userProfile.currentXP)} / {Math.round(userProfile.nextLevelXP)} XP
                                     </span>
                                 </div>
                                 <div className={styles.progressBar}>
@@ -217,15 +298,129 @@ const PreviewPage = () => {
                     <main className={styles.mainContent}>
                         {renderContent()}
                     </main>
-                    <div className={styles.quickMenu}>
-                        <div className={styles.title}>Quick Menu</div>
-                        <div className={styles.buttonContainer}>
-                          <button onClick={handleDeposit}>Deposit</button>
-                          <button>Claim Milestone</button>
-                          <button>Clear Milestone</button>
-                          <button>Add Diamonds</button>
-                          <button>Add Points</button>
-                        </div>
+                    <div className={styles.quickMenuContainer}>
+                        {isQuickMenuVisible ? (
+                            <div className={styles.quickMenu}>
+                                <div className={styles.quickMenuHeader}>
+                                    <div className={styles.title}>Quick Menu</div>
+                                    <button 
+                                        onClick={() => {
+                                            setIsQuickMenuVisible(false);
+                                            setActiveQuickMenu(null);
+                                        }} 
+                                        className={styles.closeQuickMenuButton}
+                                    >
+                                        <ChevronsDownIcon />
+                                    </button>
+                                </div>
+                                <div className={styles.buttonContainer}>
+                                    {activeQuickMenu === 'deposit' ? (
+                                        <QuickActionForm
+                                            title="Deposit"
+                                            actionLabel="Deposit"
+                                            inputType="number"
+                                            placeholder="Enter Amount..."
+                                            onSubmit={(value) => handleDeposit(value as number)}
+                                            isLoading={depositMutation.isPending}
+                                            onCancel={() => setActiveQuickMenu(null)}
+                                        />
+                                    ) : activeQuickMenu === null && (
+                                        <button className={styles.outlineButton} onClick={() => setActiveQuickMenu('deposit')}>Deposit</button>
+                                    )}
+
+                                    {activeQuickMenu === 'claim' ? (
+                                        <QuickActionForm
+                                            title="Claim Milestone"
+                                            actionLabel="Claim"
+                                            inputType="select"
+                                            selectOptions={milestones.map((m: Milestone) => ({ value: m.id, label: m.name }))}
+                                            onSubmit={(value) => handleClaimMilestone(value as string)}
+                                            isLoading={claimMilestoneMutation.isPending}
+                                            onCancel={() => setActiveQuickMenu(null)}
+                                        />
+                                    ) : activeQuickMenu === null && (
+                                        <button className={styles.outlineButton}  onClick={() => setActiveQuickMenu('claim')}>Claim Milestone</button>
+                                    )}
+
+                                    {activeQuickMenu === 'clear' ? (
+                                        <QuickActionForm
+                                            title="Clear Milestone"
+                                            actionLabel="Clear"
+                                            inputType="select"
+                                            selectOptions={milestoneOptions}
+                                            onSubmit={(value) => handleClearMilestone(value as string)}
+                                            isLoading={clearMilestoneMutation.isPending}
+                                            onCancel={() => setActiveQuickMenu(null)}
+                                        />
+                                    ) : activeQuickMenu === null && (
+                                        <button className={styles.outlineButton}  onClick={() => setActiveQuickMenu('clear')}>Clear Milestone</button>
+                                    )}
+
+                                    {activeQuickMenu === 'addDiamonds' ? (
+                                        <QuickActionForm
+                                            title="Add Diamonds"
+                                            actionLabel="Add"
+                                            inputType="number"
+                                            onSubmit={(value) => handleAddDiamonds(value as number)}
+                                            isLoading={addDiamondsMutation.isPending}
+                                            onCancel={() => setActiveQuickMenu(null)}
+                                        />
+                                    ) : activeQuickMenu === null && (
+                                        <button className={styles.outlineButton} onClick={() => setActiveQuickMenu('addDiamonds')}>Add Diamonds</button>
+                                    )}
+
+                                    {activeQuickMenu === 'addPoints' ? (
+                                        <QuickActionForm
+                                            title="Add Points"
+                                            actionLabel="Add"
+                                            inputType="number"
+                                            onSubmit={(value) => handleAddPoints(value as number)}
+                                            isLoading={addPointsMutation.isPending}
+                                            onCancel={() => setActiveQuickMenu(null)}
+                                        />
+                                    ) : activeQuickMenu === null && (
+                                        <button className={styles.outlineButton} onClick={() => setActiveQuickMenu('addPoints')}>Add Points</button>
+                                    )}
+
+
+                                    {activeQuickMenu === 'settoken' ? (
+                                        <QuickActionForm
+                                            title="Set Token"
+                                            actionLabel="Save"
+                                            inputType="text"
+                                            placeholder="Enter Token..."
+                                            onSubmit={(value) => handleSetToken(value as string)}
+                                            isLoading={claimMilestoneMutation.isPending}
+                                            onCancel={() => setActiveQuickMenu(null)}
+                                        />
+                                    ) : activeQuickMenu === null && (
+                                        <button onClick={() => setActiveQuickMenu('settoken')}>Set Token</button>
+                                    )}
+
+
+                                    {activeQuickMenu === 'setMemberId' ? (
+                                        <QuickActionForm
+                                            title="Set Member ID"
+                                            actionLabel="Save"
+                                            inputType="text"
+                                            placeholder="Enter Member ID..."
+                                            onSubmit={(value) => handleSetMemberId(value as string)}
+                                            isLoading={claimMilestoneMutation.isPending}
+                                            onCancel={() => setActiveQuickMenu(null)}
+                                        />
+                                    ) : activeQuickMenu === null && (
+                                        <button onClick={() => setActiveQuickMenu('setMemberId')}>Set Member ID</button>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <button 
+                                onClick={() => setIsQuickMenuVisible(true)} 
+                                className={styles.openQuickMenuButton}
+                            >
+                                <ZapIcon />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

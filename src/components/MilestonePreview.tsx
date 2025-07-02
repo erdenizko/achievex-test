@@ -61,7 +61,7 @@ const MilestoneCard = ({ milestone }: { milestone: Milestone }) => {
                     {milestone.description && <p className="text-xs text-gray-500 mt-1">{milestone.description}</p>}
 
                     {milestone.rewardPoints > 0 && (
-                        <p className="text-xs text-yellow-600 font-semibold mt-1">+{milestone.rewardPoints} pts</p>
+                        <p className="text-xs text-yellow-600 font-semibold mt-1">+{milestone.rewardPoints} points</p>
                     )}
 
                     {progress && progress.targetValue !== "{previous_value}" && (

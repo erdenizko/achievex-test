@@ -97,7 +97,7 @@ export function MemberDataPreview({ data, milestoneData, title }: MemberDataPrev
                         <img src={data.currentLevel.imageUrl} alt={data.currentLevel.name} className="w-10 h-10 rounded-full" />
                         <div>
                             <p className="font-bold text-md">{data.currentLevel.name}</p>
-                            <p className="text-xs text-gray-500">Level {data.currentLevel.level} ({data.currentLevel.min}+ pts)</p>
+                            <p className="text-xs text-gray-500">Level {data.currentLevel.level} ({data.currentLevel.min}+ points)</p>
                         </div>
                     </div>
                 </div>
@@ -109,7 +109,7 @@ export function MemberDataPreview({ data, milestoneData, title }: MemberDataPrev
                         <img src={data.nextLevel.imageUrl} alt={data.nextLevel.name} className="w-10 h-10 rounded-full" />
                         <div>
                             <p className="font-bold text-md">{data.nextLevel.name}</p>
-                            <p className="text-xs text-gray-500">Level {data.nextLevel.level} ({data.nextLevel.min}+ pts)</p>
+                            <p className="text-xs text-gray-500">Level {data.nextLevel.level} ({data.nextLevel.min}+ points)</p>
                         </div>
                     </div>
                 </div>
@@ -122,7 +122,7 @@ export function MemberDataPreview({ data, milestoneData, title }: MemberDataPrev
                 </div>
                 <div className="flex justify-between text-xs font-medium text-gray-500 mt-1">
                     <span>{data.currentLevel.name}</span>
-                    <span>{data.points.toFixed(0)}/{data.nextLevel.min} pts</span>
+                    <span>{data.points.toFixed(0)}/{data.nextLevel.min} points</span>
                     <span>{data.nextLevel.name}</span>
                 </div>
             </div>
