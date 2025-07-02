@@ -10,6 +10,16 @@ import {
     useClearMilestonesMutation
 } from '@/hooks/useAchieveXApi';
 import { ActionItem, FormData, MemberMilestoneResponse, MemberResponse } from '@/lib/types';
+import { useUserData } from '@/hooks/useUserData';
+
+export interface ProfileData {
+    level: string;
+    currentLevel: number;
+    currentXP: number;
+    nextLevelXP: number;
+    totalPoints: number;
+    rank: number;
+}
 
 interface AchieveXContextType {
     memberId: string;
@@ -46,6 +56,8 @@ interface AchieveXContextType {
     refetchMemberData: () => void;
     memberMilestoneData: MemberMilestoneResponse | undefined;
     refetchMemberMilestoneData: () => void;
+    profileData: ProfileData | undefined;
+    refetchProfileData: () => void;
     processActionMutation: UseMutationResult<unknown, Error, FormData, unknown>;
     clearMilestonesMutation: UseMutationResult<unknown, Error, string, unknown>;
     checkPassword: () => void;
@@ -80,10 +92,19 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
     const [isContinueDisabled, setIsContinueDisabled] = useState(false);
     const [selectedAction, setSelectedAction] = useState<ActionItem | null>(null);
     const [triggerDepositSuccess, setTriggerDepositSuccess] = useState(false);
+    const [profileData, setProfileData] = useState<ProfileData | undefined>(undefined);
+    const { userData } = useUserData();
 
     useEffect(() => {
         setShowContent(localStorage.getItem("showContent") === "true");
     }, []);
+
+    useEffect(() => {
+        console.log("userData", userData);
+        if (userData?.id) {
+            refetchProfileData();
+        }
+    }, [userData]);
 
     const { data: actionItems, isLoading: actionItemsLoading, isError: actionItemsError } = useActionItems(token);
     const { data: memberData, refetch: refetchMemberData } = useMemberData(memberId, token);
@@ -92,6 +113,7 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
     const onMutationSuccess = useCallback(() => {
         refetchMemberData();
         refetchMemberMilestoneData();
+        localStorage.setItem('achievex_data_updated', Date.now().toString());
     }, [refetchMemberData, refetchMemberMilestoneData]);
 
     const processActionMutation = useProcessActionMutation(token, onMutationSuccess);
@@ -110,6 +132,37 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
             localStorage.setItem("showContent", "true");
         }
     };
+
+    const refetchProfileData = () => {
+        const fetchProfileData = async () => {
+            if (userData?.id) {
+                try {
+                    const response = await fetch(`/api/members/external/${userData?.id}`, {
+                        headers: {
+                            'x-api-key': process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const profileData = {
+                            level: data.data.currentLevel.name,
+                            currentLevel: data.data.currentLevel.level,
+                            currentXP: data.data.points,
+                            nextLevelXP: data.data.nextLevel.min,
+                            totalPoints: data.data.points,
+                            rank: data.data.currentLevel.level
+                        }
+                        setProfileData(profileData);
+                    } else {
+                        console.error('Failed to fetch profile data');
+                    }
+                } catch (error) {
+                    console.error('Error fetching profile data:', error);
+                }
+            }
+        };
+        fetchProfileData();
+    }
 
     const handleAddAdditionalData = () => {
         setAdditionalData([...additionalData, { key: "", value: "" }]);
@@ -238,7 +291,9 @@ Body: ${JSON.stringify(requestBody, null, 2)}`;
         handleCopyRequest,
         handleCopyResponse,
         handleClearMilestone,
-        onOpenClearMilestoneDialog
+        onOpenClearMilestoneDialog,
+        profileData,
+        refetchProfileData
     };
 
     return <AchieveXContext.Provider value={value}>{children}</AchieveXContext.Provider>;

@@ -1,5 +1,6 @@
 'use client';
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import styles from './preview.module.css';
 import Rewards from './components/Rewards';
 import Levels from './components/Levels';
@@ -19,6 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useAchieveX } from '@/contexts/AchieveXContext';
 
 const PreviewPage = () => {
     const [activeView, setActiveView] = useState('Overview');
@@ -28,17 +30,19 @@ const PreviewPage = () => {
     const { userData, isLoading, saveUserData, hasUserData } = useUserData();
     const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState('');
+    const { profileData } = useAchieveX();
 
     // User profile data - now dynamic based on userData
     const userProfile = {
         name: userData?.username || 'GUEST',
-        level: 'Stone',
-        currentLevel: 1,
-        currentXP: 340,
-        nextLevelXP: 500,
-        totalPoints: 1250,
-        rank: 15
+        level: profileData?.level || 'Stone',
+        currentLevel: profileData?.currentLevel || 1,
+        currentXP: profileData?.currentXP || 0,
+        nextLevelXP: profileData?.nextLevelXP || 500,
+        totalPoints: profileData?.totalPoints || 0,
+        rank: profileData?.rank || 0,
     };
+    
 
     // Handle username submission
     const handleUsernameSubmit = (e: React.FormEvent) => {

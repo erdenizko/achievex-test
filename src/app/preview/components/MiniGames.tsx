@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './MiniGames.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
 import { useUserData } from '@/hooks/useUserData';
+import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface Game {
     id: number;
@@ -21,7 +22,7 @@ const gamesData: Game[] = [
         description: 'Test your memory skills by matching pairs of cards',
         type: 'Puzzle',
         difficulty: 'easy',
-        reward: 50,
+        reward: 10,
         icon: '🧠',
         players: 1234
     },
@@ -31,7 +32,7 @@ const gamesData: Game[] = [
         description: 'Spin for a chance to win amazing prizes',
         type: 'Luck',
         difficulty: 'easy',
-        reward: 100,
+        reward: 10,
         icon: '🎰',
         players: 5678
     },
@@ -41,7 +42,7 @@ const gamesData: Game[] = [
         description: 'Find hidden words in the letter grid',
         type: 'Word',
         difficulty: 'medium',
-        reward: 75,
+        reward: 10,
         icon: '📝',
         players: 2341
     },
@@ -51,7 +52,7 @@ const gamesData: Game[] = [
         description: 'Solve mathematical puzzles to earn points',
         type: 'Math',
         difficulty: 'hard',
-        reward: 150,
+        reward: 10,
         icon: '🔢',
         players: 987
     },
@@ -61,7 +62,7 @@ const gamesData: Game[] = [
         description: 'Match colors in sequence as fast as you can',
         type: 'Reaction',
         difficulty: 'medium',
-        reward: 80,
+        reward: 10,
         icon: '🎨',
         players: 3456
     },
@@ -71,7 +72,7 @@ const gamesData: Game[] = [
         description: 'Navigate through mazes to find hidden treasures',
         type: 'Adventure',
         difficulty: 'hard',
-        reward: 200,
+        reward: 10,
         icon: '💰',
         players: 1876
     },
@@ -83,6 +84,8 @@ const MiniGames = () => {
     const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const { userData } = useUserData();
+
+    const { refetchProfileData } = useAchieveX();
 
     const getSpotlightColor = (difficulty: string) => {
         switch (difficulty) {
@@ -129,7 +132,7 @@ const MiniGames = () => {
                 });
 
                 if (response.ok) {
-                    console.log('Game result processed successfully');
+                    refetchProfileData();
                 } else {
                     console.error('Failed to process game result');
                 }
@@ -201,7 +204,7 @@ const MiniGames = () => {
                                     </div>
                                 </div>
                                 <button className={`${styles.playButton} ${styles[`${game.difficulty}Button`]}`}>
-                                    🎮 Play & Earn {game.reward} pts
+                                    🎮 Play & Earn 10 pts
                                 </button>
                             </div>
                         </SpotlightCard>
@@ -223,6 +226,7 @@ const MiniGames = () => {
                                 <div className={styles.gameScreen}>
                                     <div className={styles.gameScreenContent}>
                                         <div className={styles.gameScreenIcon}>{selectedGame.icon}</div>
+                                        <div className={styles.gameScreenDescription}>{selectedGame.description}</div>
                                         {gameResult ? (
                                             <div className={styles.gameResultContainer}>
                                                 <div className={`${styles.gameResult} ${styles[gameResult]}`}>
@@ -239,12 +243,35 @@ const MiniGames = () => {
                                                     </div>
                                                 )}
                                             </div>
-                                        ) : (
-                                            <>
-                                                <p>Game will load here...</p>
-                                                <div className={styles.loadingSpinner}></div>
-                                            </>
-                                        )}
+                                        ) : null}
+
+                                        <div className={styles.modalActions}>
+                                            {!gameResult ? (
+                                                <>
+                                                    <button 
+                                                        className={`${styles.gameResultButton} ${styles.winButton}`}
+                                                        onClick={() => handleGameResult('win')}
+                                                        disabled={isProcessing}
+                                                    >
+                                                        🏆 Win
+                                                    </button>
+                                                    <button 
+                                                        className={`${styles.gameResultButton} ${styles.loseButton}`}
+                                                        onClick={() => handleGameResult('lose')}
+                                                        disabled={isProcessing}
+                                                    >
+                                                        😞 Lose
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button 
+                                                    className={`${styles.playAgainButton} ${styles[`${selectedGame.difficulty}Button`]}`}
+                                                    onClick={() => setGameResult(null)}
+                                                >
+                                                    🎮 Play Again
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -267,33 +294,6 @@ const MiniGames = () => {
                                         <span>Players:</span>
                                         <span>{selectedGame.players.toLocaleString()}</span>
                                     </div>
-                                </div>
-                                <div className={styles.modalActions}>
-                                    {!gameResult ? (
-                                        <>
-                                            <button 
-                                                className={`${styles.gameResultButton} ${styles.winButton}`}
-                                                onClick={() => handleGameResult('win')}
-                                                disabled={isProcessing}
-                                            >
-                                                🏆 Win
-                                            </button>
-                                            <button 
-                                                className={`${styles.gameResultButton} ${styles.loseButton}`}
-                                                onClick={() => handleGameResult('lose')}
-                                                disabled={isProcessing}
-                                            >
-                                                😞 Lose
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <button 
-                                            className={`${styles.playAgainButton} ${styles[`${selectedGame.difficulty}Button`]}`}
-                                            onClick={() => setGameResult(null)}
-                                        >
-                                            🎮 Play Again
-                                        </button>
-                                    )}
                                 </div>
                             </div>
                         </div>

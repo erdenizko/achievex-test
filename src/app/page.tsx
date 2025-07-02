@@ -1,24 +1,12 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AchieveXProvider, useAchieveX } from "@/contexts/AchieveXContext";
+import { useAchieveX } from "@/contexts/AchieveXContext";
 import { AuthForm } from "@/components/achievex/AuthForm";
 import { ActionForm } from "@/components/achievex/ActionForm";
 import { ResultsView } from "@/components/achievex/ResultsView";
 
-const queryClient = new QueryClient();
 
 export default function Home() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AchieveXProvider>
-        <AchieveXPage />
-      </AchieveXProvider>
-    </QueryClientProvider>
-  );
-}
-
-function AchieveXPage() {
   const { showContent } = useAchieveX();
 
   return (
