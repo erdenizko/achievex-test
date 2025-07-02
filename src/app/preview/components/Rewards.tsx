@@ -7,7 +7,7 @@ interface Reward {
     id: string;
     name: string;
     description: string;
-    cost: number;
+    pointsCost: number;
     is_active: boolean;
 }
 
