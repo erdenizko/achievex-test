@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Leaderboard.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
+import { useUserData } from '@/hooks/useUserData';
 
 interface LeaderboardEntry {
     rank: number;
@@ -9,6 +10,8 @@ interface LeaderboardEntry {
     level: string;
     score: number;
     avatar?: string;
+    userId: string;
+    currentLevel: number;
 }
 
 interface Member {
@@ -44,6 +47,7 @@ const dummyUserNames = [
 
 const Leaderboard = () => {
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+    const { userData } = useUserData();
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
@@ -59,6 +63,8 @@ const Leaderboard = () => {
                     user: dummyUserNames[index],
                     level: member.currentLevel,
                     score: member.totalPoints,
+                    userId: member.externalId,
+                    currentLevel: parseInt(member.currentLevel)
                 }));
                 setLeaderboardData(formattedData);
             } catch (error) {
@@ -152,13 +158,7 @@ const Leaderboard = () => {
                                 </span>
                             </div>
                             <div className={styles.userInfo}>
-                                <div className={styles.username}>{entry.user}</div>
-                                <div
-                                    className={styles.userLevel}
-                                    style={{ color: getLevelColor(entry.currentLevel) }}
-                                >
-                                    {entry.currentLevel}
-                                </div>
+                                <div className={styles.username}>{entry.userId === userData?.id ? userData.username + " (You)" : entry.user}</div>
                             </div>
                         </div>
 

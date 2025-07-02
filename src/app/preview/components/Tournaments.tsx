@@ -48,7 +48,7 @@ const Tournaments: React.FC<TournamentsProps> = ({ filter, showTitle = true }) =
         fetchTournaments();
     }, []);
 
-    const filteredTournaments = tournamentsData.filter(t => {
+    const filteredTournaments = tournamentsData?.filter(t => {
         const status = getEventStatus(t);
         return filter === 'all' || status === filter;
     });
