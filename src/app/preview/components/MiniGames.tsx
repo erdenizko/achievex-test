@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './MiniGames.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
+import { useUserData } from '@/hooks/useUserData';
 
 interface Game {
     id: number;
@@ -81,6 +82,7 @@ const MiniGames = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
+    const { userData } = useUserData();
 
     const getSpotlightColor = (difficulty: string) => {
         switch (difficulty) {
@@ -120,7 +122,7 @@ const MiniGames = () => {
                     },
                     body: JSON.stringify({
                         integrationKey: 'play_a_game',
-                        memberId: '1234567890',
+                        memberId: userData?.id,
                         gameid: selectedGame.id,
                         points: selectedGame.reward
                     })
@@ -233,7 +235,7 @@ const MiniGames = () => {
                                                 )}
                                                 {gameResult === 'win' && !isProcessing && (
                                                     <div className={styles.rewardMessage}>
-                                                        +100 points earned!
+                                                        {selectedGame.reward} points earned!
                                                     </div>
                                                 )}
                                             </div>
