@@ -93,17 +93,6 @@ const Leaderboard = () => {
         }
     };
 
-    const getLevelColor = (level: number) => {
-        switch (level) {
-            case 1: return '#b9f2ff';
-            case 2: return '#e0115f';
-            case 3: return '#ffd700';
-            case 4: return '#c0c0c0';
-            case 5: return '#cd7f32';
-            default: return '#94a3b8';
-        }
-    };
-
     return (
         <div>
             <div className={styles.titleSection}>
