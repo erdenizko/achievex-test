@@ -149,7 +149,7 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
                             currentLevel: data.data.currentLevel.level,
                             currentXP: data.data.points,
                             nextLevelXP: data.data.nextLevel.min,
-                            totalPoints: data.data.points,
+                            totalPoints: data.data.spendablePoints,
                             rank: data.data.currentLevel.level
                         }
                         setProfileData(profileData);

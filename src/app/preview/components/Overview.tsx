@@ -48,7 +48,7 @@ const featuredGames: Game[] = [
     },
 ];
 
-const Overview = () => {
+const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) => {
     const [activeTab] = useState<'all' | 'started' | 'finished'>('all');
     const [selectedGame, setSelectedGame] = useState<Game | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,7 +117,7 @@ const Overview = () => {
                         </div>
                     </div>
                     <div className={styles.bannerActions}>
-                        <button className={styles.playNowButton}>
+                        <button className={styles.playNowButton} onClick={() => setActiveView('Mini Games')}>
                             <span className={styles.buttonIcon}>🚀</span>
                             Start Playing Now
                             <div className={styles.buttonShine}></div>
@@ -161,11 +161,11 @@ const Overview = () => {
                                     <p className={styles.gameDescription}>{game.description}</p>
                                     <div className={styles.gameStats}>
                                         <div className={styles.statItem}>
-                                            <span className={styles.statIcon}>🏷️</span>
+                                            <span className={styles.gameCardStatIcon}>🏷️</span>
                                             <span className={styles.statValue}>{game.type}</span>
                                         </div>
                                         <div className={styles.statItem}>
-                                            <span className={styles.statIcon}>💎</span>
+                                            <span className={styles.gameCardStatIcon}>💎</span>
                                             <span className={styles.statValue}>{game.reward} pts</span>
                                         </div>
                                     </div>

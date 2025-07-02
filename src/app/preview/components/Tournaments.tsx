@@ -159,6 +159,11 @@ const Tournaments: React.FC<TournamentsProps> = ({ filter, showTitle = true }) =
                         </SpotlightCard>
                     )
                 })}
+                {filteredTournaments.length === 0 && (
+                    <div className={styles.noTournaments}>
+                        <p>No tournaments found</p>
+                    </div>
+                )}
             </div>
         </div>
     );

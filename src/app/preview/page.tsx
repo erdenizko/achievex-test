@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styles from './preview.module.css';
 import Rewards from './components/Rewards';
 import Levels from './components/Levels';
@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useAchieveX } from '@/contexts/AchieveXContext';
+import { useDepositMutation } from '@/hooks/useAchieveXApi';
 
 const PreviewPage = () => {
     const [activeView, setActiveView] = useState('Overview');
@@ -30,7 +31,17 @@ const PreviewPage = () => {
     const { userData, isLoading, saveUserData, hasUserData } = useUserData();
     const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState('');
-    const { profileData } = useAchieveX();
+    const { profileData, token } = useAchieveX();
+
+    const depositMutation = useDepositMutation(token, () => {
+        console.log("Deposit successful");
+    });
+
+    const handleDeposit = () => {
+        if (userData?.id) {
+            depositMutation.mutate({ memberId: userData.id, amount: 100 }); 
+        }
+    };
 
     // User profile data - now dynamic based on userData
     const userProfile = {
@@ -81,7 +92,7 @@ const PreviewPage = () => {
     const renderContent = () => {
         switch (activeView) {
             case 'Overview':
-                return <Overview />;
+                return <Overview setActiveView={setActiveView} />;
             case 'Milestones':
                 return <Milestones />;
             case 'Leaderboard':
@@ -166,13 +177,11 @@ const PreviewPage = () => {
                             </div>
 
                             <div className={styles.userInfo}>
-                                <h3 className={styles.username}>{userProfile.name}</h3>
+                                <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', justifyContent: 'space-between', width: '100%', marginBottom: '10px', padding: '6px 16px', background: 'rgba(0, 0, 0, 0.1)', borderRadius: '8px'}}>
+                                    <h3 className={styles.username}>{userProfile.name} </h3>
+                                    <span className={styles.diamonds}>{userProfile.totalPoints} 💎</span>
+                                </div>
                                 <div className={styles.levelBadge}>Level: {userProfile.level}</div>
-                                {userData && (
-                                    <div className="text-xs text-gray-500 mt-1">
-                                        ID: {userData.id.slice(0, 8)}...
-                                    </div>
-                                )}
                             </div>
 
                             <div className={styles.progressSection}>
@@ -188,9 +197,6 @@ const PreviewPage = () => {
                                         style={{ width: `${getProgressPercentage()}%` }}
                                     ></div>
                                     <div className={styles.progressGlow}></div>
-                                </div>
-                                <div className={styles.nextLevelInfo}>
-                                    {userProfile.nextLevelXP - userProfile.currentXP} XP to next level
                                 </div>
                             </div>
                         </div>
@@ -211,6 +217,16 @@ const PreviewPage = () => {
                     <main className={styles.mainContent}>
                         {renderContent()}
                     </main>
+                    <div className={styles.quickMenu}>
+                        <div className={styles.title}>Quick Menu</div>
+                        <div className={styles.buttonContainer}>
+                          <button onClick={handleDeposit}>Deposit</button>
+                          <button>Claim Milestone</button>
+                          <button>Clear Milestone</button>
+                          <button>Add Diamonds</button>
+                          <button>Add Points</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

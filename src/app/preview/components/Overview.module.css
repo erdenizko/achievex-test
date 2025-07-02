@@ -206,9 +206,9 @@
     box-shadow: 0 15px 35px rgba(255, 215, 0, 0.2);
 }
 
-.statIcon {
+.gameCardStatIcon {
     font-size: 2.5rem;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
     filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
 }
 

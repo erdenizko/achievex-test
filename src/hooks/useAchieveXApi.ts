@@ -71,4 +71,20 @@ export const useClearMilestonesMutation = (token: string, onSuccess: () => void)
         },
         onSuccess,
     });
-} 
+}
+
+export const useDepositMutation = (token: string, onSuccess: () => void) => {
+    return useMutation({
+        mutationFn: (data: { memberId: string, amount: number }) => {
+            return fetch(`/api/deposit`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": token,
+                },
+                body: JSON.stringify(data),
+            }).then((res) => res.json()).then((data) => data.data);
+        },
+        onSuccess,
+    });
+}; 
