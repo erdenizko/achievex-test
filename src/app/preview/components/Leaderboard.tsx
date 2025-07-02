@@ -11,7 +11,6 @@ interface LeaderboardEntry {
     score: number;
     avatar?: string;
     userId: string;
-    currentLevel: number;
 }
 
 interface Member {
@@ -64,7 +63,6 @@ const Leaderboard = () => {
                     currentLevel: member.currentLevel,
                     score: member.totalPoints,
                     userId: member.externalId,
-                    currentLevel: parseInt(member.currentLevel)
                 }));
                 setLeaderboardData(formattedData);
             } catch (error) {
