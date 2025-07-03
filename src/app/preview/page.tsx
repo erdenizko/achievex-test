@@ -36,7 +36,7 @@ const PreviewPage = () => {
     const navItems = ['Overview', 'Mini Games', 'Milestones', 'Leaderboard', 'Events', 'Levels', 'Rewards'];
     
     // User data management
-    const { userData, isLoading, saveUserData, hasUserData } = useUserData();
+    const { userData, isLoading, hasUserData } = useUserData();
     const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState('');
     const { profileData, token, setToken, memberId, setMemberId, getMilestones } = useAchieveX();
@@ -136,7 +136,8 @@ const PreviewPage = () => {
         
         // Clear any previous errors and save the user data
         setUsernameError('');
-        saveUserData(trimmedUsername);
+        setMemberId(generateUUID());
+        setUsername(trimmedUsername);
     };
 
     const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
