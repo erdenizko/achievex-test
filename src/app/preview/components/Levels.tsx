@@ -90,7 +90,11 @@ const Levels = () => {
                         if(profileData.currentLevel > (index + 1)) {
                             progress = 100;
                         } else if (profileData.currentLevel == (index + 1)) {
-                            progress = (profileData?.currentXP - levelsData[index].pointsRequired) / (levelsData[index + 1].pointsRequired - levelsData[index].pointsRequired) * 100;
+                            if(index + 1 < levelsData.length) {
+                                progress = (profileData?.currentXP - levelsData[index].pointsRequired) / ((levelsData[index + 1]?.pointsRequired || 0) - levelsData[index].pointsRequired) * 100;
+                            } else {
+                                progress = 100;
+                            }
                         } else {
                             progress = 0;
                         }
