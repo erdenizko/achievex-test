@@ -91,11 +91,18 @@ const Milestones = () => {
                             {!milestone.imageUrl && (
                                 <img className={styles.milestoneImage} src="/images/placeholder.svg" alt={milestone.name}/>
                             )}
-                            <h4>{milestone.name}</h4>
+                            <h4>{milestone.name}</h4> 
                             {milestone.description && (
                                 <p className={styles.description}>{milestone.description}</p>
                             )}
 
+                            <div className={styles.requirementsContainer}>
+                                <ul>
+                                    {milestone.requirements.map((requirement) => (
+                                        <li key={requirement.taskId}>{requirement.taskName.replaceAll('_', ' ')}</li>
+                                    ))}
+                                </ul>
+                            </div>
                             {milestone.isStreakBased && (
                                 <div className={styles.streakContainer}>
                                     {Array.from({length: milestone.streakDuration}).map((_, index) => (
@@ -103,6 +110,7 @@ const Milestones = () => {
                                     ))}
                                 </div>
                             )}
+
 
                             <div className={styles.rewardSection}>
                                 {!isCompleted && (
