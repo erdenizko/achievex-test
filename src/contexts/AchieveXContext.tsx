@@ -10,7 +10,6 @@ import {
     useClearMilestonesMutation
 } from '@/hooks/useAchieveXApi';
 import { ActionItem, FormData, MemberMilestoneResponse, MemberResponse, Milestone } from '@/lib/types';
-import { useUserData } from '@/hooks/useUserData';
 
 export interface ProfileData {
     level: string;
@@ -71,6 +70,8 @@ interface AchieveXContextType {
     handleClearMilestone: () => void;
     onOpenClearMilestoneDialog: (isOpen: boolean) => void;
     getMilestones: () => Promise<Milestone[]>;
+    username: string;
+    setUsername: (username: string) => void;
 }
 
 const AchieveXContext = createContext<AchieveXContextType | undefined>(undefined);
@@ -85,6 +86,12 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
     const [isShowRequestPreview, setIsShowRequestPreview] = useState(false);
     const [password, setPassword] = useState("");
     const [showContent, setShowContent] = useState(false);
+    const [username, setUsername] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('achieveXUsername') || "";
+        }
+        return "";
+    });
     const [memberId, setMemberId] = useState(() => {
         if (typeof window !== 'undefined') {
             return localStorage.getItem('achieveXMemberId') || "";
@@ -104,18 +111,29 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
     const [selectedAction, setSelectedAction] = useState<ActionItem | null>(null);
     const [triggerDepositSuccess, setTriggerDepositSuccess] = useState(false);
     const [profileData, setProfileData] = useState<ProfileData | undefined>(undefined);
-    const { userData } = useUserData();
 
     useEffect(() => {
         setShowContent(localStorage.getItem("showContent") === "true");
     }, []);
 
     useEffect(() => {
-        console.log("userData", userData);
-        if (userData?.id) {
+        if (username) {
+            localStorage.setItem('achieveXUsername', username);
+        }
+    }, [username]);
+
+    useEffect(() => {
+        if (memberId) {
+            localStorage.setItem('achieveXMemberId', memberId);
             refetchProfileData();
         }
-    }, [userData]);
+    }, [memberId]);
+
+    useEffect(() => {
+        if (token) {
+            localStorage.setItem('achieveXToken', token);
+        }
+    }, [token]);
 
     const { data: actionItems, isLoading: actionItemsLoading, isError: actionItemsError } = useActionItems(token);
     const { data: memberData, refetch: refetchMemberData } = useMemberData(memberId, token);
@@ -315,7 +333,9 @@ Body: ${JSON.stringify(requestBody, null, 2)}`;
         onOpenClearMilestoneDialog,
         profileData,
         refetchProfileData,
-        getMilestones
+        getMilestones,
+        username,
+        setUsername
     };
 
     return <AchieveXContext.Provider value={value}>{children}</AchieveXContext.Provider>;

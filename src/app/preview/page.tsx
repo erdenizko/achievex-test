@@ -9,7 +9,6 @@ import Leaderboard from './components/Leaderboard';
 import Overview from './components/Overview';
 import Tournaments from './components/Tournaments';
 import MiniGames from './components/MiniGames';
-import { useUserData } from '@/hooks/useUserData';
 import {
   Dialog,
   DialogContent,
@@ -36,10 +35,8 @@ const PreviewPage = () => {
     const navItems = ['Overview', 'Mini Games', 'Milestones', 'Leaderboard', 'Events', 'Levels', 'Rewards'];
     
     // User data management
-    const { userData, isLoading, hasUserData } = useUserData();
-    const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState('');
-    const { profileData, token, setToken, memberId, setMemberId, getMilestones } = useAchieveX();
+    const { profileData, token, setToken, memberId, setMemberId, getMilestones, username, setUsername } = useAchieveX();
 
     const [milestones, setMilestones] = useState<Milestone[]>([]);
     useEffect(() => {
@@ -70,33 +67,33 @@ const PreviewPage = () => {
     });
 
     const handleDeposit = (amount: number) => {
-        if (userData?.id) {
+        if (memberId) {
             console.log("Deposit amount: ", amount);
             depositMutation.mutate({ memberId: memberId, amount, integrationKey: 'deposit_succeeded' }); 
         }
     };
 
     const handleClaimMilestone = (milestoneId: string) => {
-        if (userData?.id) {
+        if (memberId) {
             claimMilestoneMutation.mutate({ memberId: memberId, milestoneId });
         }
     };
 
     const handleClearMilestone = () => {
-        if (userData?.id) {
+        if (memberId) {
             clearMilestoneMutation.mutate({ memberId: memberId });
         }
     };
 
     const handleAddPoints = (amount: number) => {
-        if (userData?.id) {
+        if (memberId) {
             addPointsMutation.mutate({ memberId: memberId, amount });
         }
     };
 
     // User profile data - now dynamic based on userData
     const userProfile = {
-        name: userData?.username || 'GUEST',
+        name: username || 'GUEST',
         level: profileData?.level || 'Stone',
         currentLevel: profileData?.currentLevel || 1,
         currentXP: profileData?.currentXP || 0,
@@ -188,7 +185,7 @@ const PreviewPage = () => {
     return (
         <>
             {/* Username Modal - shows only when user data is not available */}
-            <Dialog open={!isLoading && !hasUserData} modal>
+            <Dialog open={!memberId} modal>
                 <DialogContent 
                     className="sm:max-w-md"
                     onEscapeKeyDown={(e) => e.preventDefault()}
@@ -381,7 +378,7 @@ const PreviewPage = () => {
                                     {activeQuickMenu === null && (
                                         <button onClick={() => {
                                             setToken(process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || "");
-                                            setMemberId(userData?.id || "");
+                                            setMemberId(generateUUID());
                                             setActiveQuickMenu(null);
                                         }}>Revert to Demo Token & Member ID</button>
                                     )}
