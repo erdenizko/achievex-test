@@ -14,7 +14,7 @@ interface Reward {
 
 const Rewards = () => {
     const [rewardsData, setRewardsData] = useState<Reward[]>([]);
-    const { token } = useAchieveX();
+    const { token, memberId, refetchMemberData } = useAchieveX();
     useEffect(() => {
         const fetchRewards = async () => {
             const response = await fetch(`/api/achievex/rewards`, {
@@ -27,7 +27,41 @@ const Rewards = () => {
         };
 
         fetchRewards();
-    }, []);
+    }, [token]);
+
+    const handleBuyReward = async (rewardId: string) => {
+        if (!memberId) {
+            console.error('Member ID not found');
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `/api/achievex/rewards/${rewardId}/claim`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': token,
+                    },
+                    body: JSON.stringify({
+                        memberId: memberId,
+                        quantity: 1,
+                    }),
+                }
+            );
+
+            if (response.ok) {
+                console.log('Reward claimed successfully');
+                refetchMemberData();
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to claim reward:', errorData);
+            }
+        } catch (error) {
+            console.error('Error claiming reward:', error);
+        }
+    };
 
     const getSpotlightColor = () => {
         return 'rgba(34, 197, 94, 0.4)' as `rgba(${number}, ${number}, ${number}, ${number})`;
@@ -78,7 +112,10 @@ const Rewards = () => {
                         </div>
                         <div className={styles.rewardContent}>
                             <h4>{reward.name}</h4>
-                            <button className={`${styles.buyButton}`}>
+                            <button
+                                className={`${styles.buyButton}`}
+                                onClick={() => handleBuyReward(reward.id)}
+                            >
                                 Buy for {reward.pointsCost} points
                             </button>
                         </div>

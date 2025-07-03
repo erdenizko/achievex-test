@@ -6,15 +6,10 @@ export async function GET(
 ) {
     const { path } = await params;
     const url = new URL(request.url);
-    console.log("request x-api-key-----", request.headers.get('x-api-key'));
     const token = request.headers.get('x-api-key') || process.env.ACHIEVEX_DEMO_TOKEN || '';
-    console.log("token-----", token);
-    console.log("process.env.ACHIEVEX_API_URL-----", process.env.ACHIEVEX_API_URL);
     const searchParams = url.search;
 
     const fullUrl = `${process.env.ACHIEVEX_API_URL}/${path}${searchParams}`;
-
-    console.log("fullUrl-----", fullUrl);
 
     try {
         const response = await fetch(fullUrl, {
@@ -22,10 +17,7 @@ export async function GET(
                 'x-api-key': token,
             },
         });
-        console.log("response-----", response);
-        console.log("response.ok-----", response.ok);
         const data = await response.json();
-        console.log("response.body-----", data);
 
         if (!response.ok) {
             return NextResponse.json({ error: data }, { status: response.status });
@@ -45,17 +37,18 @@ export async function POST(
     const { path } = await params;
     const url = new URL(request.url);
     const searchParams = url.search;
-
-    const fullUrl = `${process.env.ACHIEVEX_API_URL}/${path}${searchParams}`;
-
+    const token = request.headers.get('x-api-key') || process.env.ACHIEVEX_DEMO_TOKEN || '';
+    const body = await request.json();
+    const pathJoined = path.length > 0 ? path.join('/') : '';
+    const fullUrl = `${process.env.ACHIEVEX_API_URL}/${pathJoined}${searchParams}`;
     try {
         const response = await fetch(fullUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'x-api-key': process.env.ACHIEVEX_DEMO_TOKEN || '',
+                'x-api-key': token,
             },
-            body: request.body,
+            body: JSON.stringify(body),
         });
 
         const data = await response.json();
