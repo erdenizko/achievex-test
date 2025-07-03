@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         if (!orgToken) {
             return NextResponse.json({ error: "Invalid token" }, { status: 403 });
         }
-
+        console.log("body", body);
         const member = await prisma.member.findFirst({
             where: {
                 externalId: body.memberId,
