@@ -241,7 +241,7 @@ const PreviewPage = () => {
                             <div className={styles.avatarContainer}>
                                 <div className={styles.avatar}>
                                     <span className={styles.avatarText}>
-                                        {userProfile.name.charAt(0)}
+                                        {userProfile.name.charAt(0).toUpperCase()}
                                     </span>
                                 </div>
                             </div>
