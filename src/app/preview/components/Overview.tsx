@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Overview.module.css';
 import Tournaments from './Tournaments';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
@@ -56,6 +56,15 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
     const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const { token, refetchProfileData, memberId } = useAchieveX();
+    const [isBonusClaimed, setIsBonusClaimed] = useState(false);
+    const [isClaimingBonus, setIsClaimingBonus] = useState(false);
+
+    useEffect(() => {
+        const bonusClaimed = localStorage.getItem('dailyBonusClaimed');
+        if (bonusClaimed === 'true') {
+            setIsBonusClaimed(true);
+        }
+    }, []);
 
     const getSpotlightColor = (difficulty: string) => {
         switch (difficulty) {
@@ -114,6 +123,37 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
         }
     };
 
+    const handleClaimBonus = async () => {
+        if (isClaimingBonus || isBonusClaimed) return;
+
+        setIsClaimingBonus(true);
+        try {
+            const response = await fetch('/api/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': token || process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
+                },
+                body: JSON.stringify({
+                    integrationKey: 'claim_bonus',
+                    memberId: memberId,
+                })
+            });
+
+            if (response.ok) {
+                refetchProfileData();
+                setIsBonusClaimed(true);
+                localStorage.setItem('dailyBonusClaimed', 'true');
+            } else {
+                console.error('Failed to claim daily bonus');
+            }
+        } catch (error) {
+            console.error('Error claiming daily bonus:', error);
+        } finally {
+            setIsClaimingBonus(false);
+        }
+    };
+
     return (
         <div>
             {/* Welcome Banner */}
@@ -164,9 +204,13 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
                             Start Playing Now
                             <div className={styles.buttonShine}></div>
                         </button>
-                        <button className={styles.bonusButton}>
+                        <button
+                            className={`${styles.bonusButton} ${isBonusClaimed ? styles.bonusClaimedButton : ''}`}
+                            onClick={handleClaimBonus}
+                            disabled={isBonusClaimed || isClaimingBonus}
+                        >
                             <span className={styles.buttonIcon}>🎁</span>
-                            Claim Daily Bonus
+                            {isClaimingBonus ? 'Claiming...' : isBonusClaimed ? 'Bonus Claimed' : 'Claim Daily Bonus'}
                         </button>
                     </div>
                     <div className={styles.liveIndicator}>
