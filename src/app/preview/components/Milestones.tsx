@@ -81,28 +81,33 @@ const Milestones = () => {
                     return (
                     <SpotlightCard
                         key={milestone.id}
-                        className={`${styles.milestoneCard} ${isCompleted ? styles.completed : ''}`}
+                        className={`${styles.milestoneCard}`}
                         spotlightColor={isCompleted ? 'rgba(34, 197, 94, 0.6)' : 'rgba(148, 163, 184, 0.4)'}
                     >
                         <div className={styles.milestoneContent}>
-                            {milestone.imageUrl && (
-                                <img className={styles.milestoneImage} src={milestone.imageUrl} alt={milestone.name}/>
-                            )}
-                            {!milestone.imageUrl && (
-                                <img className={styles.milestoneImage} src="/images/placeholder.svg" alt={milestone.name}/>
-                            )}
-                            <h4>{milestone.name}</h4> 
+                                {isCompleted && (
+                                    <div className={styles.completedBadge}>✅ COMPLETED</div>
+                                )}
+                            <div className={`${isCompleted ? styles.completedMilestoneCard : ''}`}>
+                                {milestone.imageUrl && (
+                                    <img className={styles.milestoneImage} src={milestone.imageUrl} alt={milestone.name}/>
+                                )}
+                                {!milestone.imageUrl && (
+                                    <img className={styles.milestoneImage} src="/images/placeholder.svg" alt={milestone.name}/>
+                                )}
+                            </div>
+                            <h4 className={`${isCompleted ? styles.completedMilestoneName : ''}`}>{milestone.name}</h4> 
                             {milestone.description && (
                                 <p className={styles.description}>{milestone.description}</p>
                             )}
 
-                            <div className={styles.requirementsContainer}>
+                            <div className={`${styles.requirementsContainer} ${isCompleted ? styles.completedRequirementsContainer : ''}`}>
                                 <ul>
                                     {milestone.requirements.map((requirement) => (
                                         <li key={requirement.taskId}>{requirement.taskName.replaceAll('_', ' ')} {requirement.repeatCount > 1 && <span>({requirement.repeatCount} times)</span>}
                                         {milestone.isStreakBased && (
                                             <span>
-                                                for {milestone.streakDuration} days
+                                                for <strong>{milestone.streakDuration} days</strong>
                                             </span>
                                         )}
                                         </li>
@@ -110,7 +115,7 @@ const Milestones = () => {
                                 </ul>
                             </div>
                             {milestone.isStreakBased && (
-                                <div className={styles.streakContainer}>
+                                <div className={`${styles.streakContainer} ${isCompleted ? styles.completedStreakContainer : ''}`}>
                                     {Array.from({length: milestone.streakDuration}).map((_, index) => (
                                         <div className={`${styles.streakDot} ${(milestoneData?.streakInfo?.currentStreak || -1) >= (index + 1) ? styles.completed : ''}`} key={index}></div>
                                     ))}
@@ -119,27 +124,17 @@ const Milestones = () => {
 
                             {!milestone.isStreakBased && (
                                 milestone.requirements.map((requirement, index) => (
-                                    <div className={styles.streakContainer} key={index}>
+                                    <div className={`${styles.streakContainer} ${isCompleted ? styles.completedStreakContainer : ''}`} key={index}>
                                         {Array.from({length: requirement?.repeatCount}).map((_, index) => (
-                                            <div className={styles.streakDot} key={index}></div>
+                                            <div className={`${styles.streakDot} ${((milestoneData?.progress[0]?.currentValue || 0) >= (index + 1)) ? styles.completed : ''}`} key={index}></div>
                                         ))}
                                     </div>
                                 ))
                             )}
 
-                        
-
-
-                            <div className={styles.rewardSection}>
-                                {!isCompleted && (
-                                    <>
+                            <div className={`${styles.rewardSection} ${isCompleted ? styles.completedRewardSection : ''}`}>
                                         <span className={styles.rewardLabel}>🎁 Reward:</span>
                                         <span className={styles.rewardValue}>{milestone.rewardPoints} Points</span>
-                                    </>
-                                )}
-                                {isCompleted && (
-                                    <div className={styles.completedBadge}>✅ COMPLETED</div>
-                                )}
                             </div>
                             </div>
                         </SpotlightCard>

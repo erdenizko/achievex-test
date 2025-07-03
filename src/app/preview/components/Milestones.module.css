@@ -246,7 +246,20 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.completedRewardSection, .completedStreakContainer, .completedRequirementsContainer, .completedMilestoneName {
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+
+.completedMilestoneCard {
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+
 .completedBadge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 0.6rem;
