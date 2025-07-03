@@ -39,7 +39,7 @@ const PreviewPage = () => {
     const { userData, isLoading, saveUserData, hasUserData } = useUserData();
     const [username, setUsername] = useState('');
     const [usernameError, setUsernameError] = useState('');
-    const { profileData, token, setToken, memberId, setMemberId, memberMilestoneData, getMilestones } = useAchieveX();
+    const { profileData, token, setToken, memberId, setMemberId, getMilestones } = useAchieveX();
 
     const [milestones, setMilestones] = useState<Milestone[]>([]);
     useEffect(() => {
@@ -104,7 +104,7 @@ const PreviewPage = () => {
         totalPoints: profileData?.totalPoints || 0,
         rank: profileData?.rank || 0,
     };
-    
+
     const generateUUID = (): string => {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
           const r = Math.random() * 16 | 0;
