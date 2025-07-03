@@ -330,6 +330,14 @@
     color: #fff;
 }
 
+.maxClaims {
+    color: #ff0000;
+    font-size: 0.8rem;
+    font-weight: 400;
+    position: relative;
+    top: -2px;
+}
+
 .buyButton::before {
     content: '';
     position: absolute;

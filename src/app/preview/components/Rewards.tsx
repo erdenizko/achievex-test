@@ -9,7 +9,10 @@ interface Reward {
     name: string;
     description: string;
     pointsCost: number;
-    is_active: boolean;
+    isActive: boolean;
+    maxClaims: number;
+    maxClaimsPerMember: number;
+    imageUrl: string;
 }
 
 const Rewards = () => {
@@ -109,9 +112,16 @@ const Rewards = () => {
                         spotlightColor={getSpotlightColor()}
                     >
                         <div className={styles.rewardImage}>
+                            {reward.imageUrl && (
+                                <img src={reward.imageUrl} alt={reward.name} />
+                            )}
+                            {!reward.imageUrl && (
+                                <img src="/images/placeholder.svg" alt={reward.name} />
+                            )}
                         </div>
                         <div className={styles.rewardContent}>
-                            <h4>{reward.name}</h4>
+                            <h4>{reward.name} {reward.maxClaims ? <span className={styles.maxClaims}>({reward.maxClaims} left)</span> : ''}</h4>
+                            <p>{reward.description}</p>
                             <button
                                 className={`${styles.buyButton}`}
                                 onClick={() => handleBuyReward(reward.id)}
