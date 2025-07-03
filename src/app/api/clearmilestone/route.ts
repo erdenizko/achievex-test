@@ -34,10 +34,23 @@ export async function POST(request: Request) {
             },
         });
 
-        await prisma.milestoneProgress.deleteMany({
+        await prisma.milestoneProgress.findMany({
             where: {
                 memberId: member.id,
             },
+        }).then((milestones) => {
+            milestones.forEach(async (milestoneProgress) => {
+                await prisma.milestoneRequirementProgress.deleteMany({
+                    where: {
+                        milestoneProgressId: milestoneProgress.id,
+                    },
+                });
+                await prisma.milestoneProgress.delete({
+                    where: {
+                        id: milestoneProgress.id,
+                    },
+                });
+            });
         });
 
 

@@ -1,5 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ActionItem, FormData, MemberMilestoneResponse, MemberResponse } from "@/lib/types";
+import { useAchieveX } from "@/contexts/AchieveXContext";
+
+const queryClient = new QueryClient();
 
 export const useActionItems = (token: string) => {
     return useQuery<ActionItem[]>({
@@ -74,17 +77,26 @@ export const useClearMilestonesMutation = (token: string, onSuccess: () => void)
 }
 
 export const useDepositMutation = (token: string, onSuccess: () => void) => {
+    const { refetchMemberMilestoneData } = useAchieveX();
     return useMutation({
-        mutationFn: (data: { memberId: string, amount: number, integrationKey: string }) => {
+        mutationFn: async (data: { memberId: string, amount: number, integrationKey: string }) => {
             data.integrationKey = 'deposit_succeeded';
-            return fetch(`/api/process`, {
+            const response = await fetch(`/api/process`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "x-api-key": token,
                 },
                 body: JSON.stringify(data),
-            }).then((res) => res.json()).then((data) => data.data);
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to deposit');
+            }
+
+            refetchMemberMilestoneData();
+
+            return response.json();
         },
         onSuccess,
     });
