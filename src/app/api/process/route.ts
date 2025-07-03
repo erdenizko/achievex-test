@@ -1,9 +1,4 @@
 import { NextResponse } from "next/server";
-import http from 'http';
-
-const agent = new http.Agent({
-    keepAlive: false,
-});
 
 export async function POST(request: Request) {
   const token = request.headers.get("x-api-key");
@@ -17,6 +12,7 @@ export async function POST(request: Request) {
     console.log("body", body);
     console.log("token", token);
     console.log("process.env.ACHIEVEX_API_URL", process.env.ACHIEVEX_API_URL);
+    console.log("process.env.ACHIEVEX_API_URL/process", `${process.env.ACHIEVEX_API_URL}/process`);
     const apiResponse = await fetch(`${process.env.ACHIEVEX_API_URL}/process`, {
       method: "POST",
       headers: {
@@ -24,9 +20,9 @@ export async function POST(request: Request) {
         "x-api-key": token,
       },
       body: JSON.stringify(body),
-      // @ts-expect-error - Node.js fetch supports agent but it's not in the types
-      agent: process.env.ACHIEVEX_API_URL.startsWith('http://') ? agent : undefined,
     });
+
+    console.log("apiResponse-----", await apiResponse.text());
 
     const data = await apiResponse.json();
 

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styles from './MiniGames.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
-import { useUserData } from '@/hooks/useUserData';
 import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface Game {
@@ -83,8 +82,7 @@ const MiniGames = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
-    const { userData } = useUserData();
-    const { token } = useAchieveX();
+    const { token, memberId } = useAchieveX();
 
     const { refetchProfileData } = useAchieveX();
 
@@ -126,8 +124,7 @@ const MiniGames = () => {
                     },
                     body: JSON.stringify({
                         integrationKey: 'transaction_added',
-                        memberId: userData?.id,
-                        gameid: selectedGame.id,
+                        memberId: memberId,
                         points: selectedGame.reward
                     })
                 });

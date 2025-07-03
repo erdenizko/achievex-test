@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import styles from './Overview.module.css';
 import Tournaments from './Tournaments';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
-import { useUserData } from '@/hooks/useUserData';
 import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface Game {
@@ -56,8 +55,7 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
-    const { userData } = useUserData();
-    const { token, refetchProfileData } = useAchieveX();
+    const { token, refetchProfileData, memberId } = useAchieveX();
 
     const getSpotlightColor = (difficulty: string) => {
         switch (difficulty) {
@@ -97,8 +95,7 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
                     },
                     body: JSON.stringify({
                         integrationKey: 'transaction_added',
-                        memberId: userData?.id,
-                        gameid: selectedGame.id,
+                        memberId: memberId,
                         points: selectedGame.reward
                     })
                 });
