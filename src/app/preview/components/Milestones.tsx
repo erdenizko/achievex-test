@@ -74,9 +74,9 @@ const Milestones = () => {
             </div>
             <div className={styles.milestonesContainer}>
                 {milestonesData.map(milestone => {
-                    const milestoneData = memberMilestoneData?.memberMilestones.find(m => m.id === milestone.id);
+                    const milestoneData = memberMilestoneData?.memberMilestones.find(m => m.name === milestone.name);
                     console.log('milestoneData', milestoneData);
-                    const isCompleted = milestoneData ? true : false;
+                    const isCompleted = milestoneData ? milestoneData.completed : false;
                     console.log('isCompleted', isCompleted);
                     return (
                     <SpotlightCard
@@ -99,17 +99,29 @@ const Milestones = () => {
                             <div className={styles.requirementsContainer}>
                                 <ul>
                                     {milestone.requirements.map((requirement) => (
-                                        <li key={requirement.taskId}>{requirement.taskName.replaceAll('_', ' ')}</li>
+                                        <li key={requirement.taskId}>{requirement.taskName.replaceAll('_', ' ')} {requirement.repeatCount > 1 && <span>({requirement.repeatCount} times)</span>}</li>
                                     ))}
                                 </ul>
                             </div>
                             {milestone.isStreakBased && (
                                 <div className={styles.streakContainer}>
                                     {Array.from({length: milestone.streakDuration}).map((_, index) => (
-                                        <div className={`${styles.streakDot} ${(milestoneData?.streakInfo?.currentStreak || -1) >= index ? styles.completed : ''}`} key={index}></div>
+                                        <div className={`${styles.streakDot} ${(milestoneData?.streakInfo?.currentStreak || -1) >= (index + 1) ? styles.completed : ''}`} key={index}></div>
                                     ))}
                                 </div>
                             )}
+
+                            {!milestone.isStreakBased && (
+                                milestone.requirements.map((requirement, index) => (
+                                    <div className={styles.streakContainer} key={index}>
+                                        {Array.from({length: requirement?.repeatCount}).map((_, index) => (
+                                            <div className={styles.streakDot} key={index}></div>
+                                        ))}
+                                    </div>
+                                ))
+                            )}
+
+                        
 
 
                             <div className={styles.rewardSection}>
