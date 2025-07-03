@@ -1,8 +1,6 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ActionItem, FormData, MemberMilestoneResponse, MemberResponse } from "@/lib/types";
 import { useAchieveX } from "@/contexts/AchieveXContext";
-
-const queryClient = new QueryClient();
 
 export const useActionItems = (token: string) => {
     return useQuery<ActionItem[]>({
@@ -62,22 +60,29 @@ export const useProcessActionMutation = (token: string, onSuccess: () => void) =
 
 export const useClearMilestonesMutation = (token: string, onSuccess: () => void) => {
     return useMutation({
-        mutationFn: (memberId: string) => {
-            return fetch(`/api/clear`, {
+        mutationFn: async (memberId: string) => {
+            const response = await fetch(`/api/clear`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "x-api-key": token,
                 },
                 body: JSON.stringify({ memberId }),
-            }).then((res) => res.json()).then((data) => data.data);
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to clear milestones');
+            }
+
+
+            return response.json();
         },
         onSuccess,
     });
 }
 
 export const useDepositMutation = (token: string, onSuccess: () => void) => {
-    const { refetchMemberMilestoneData } = useAchieveX();
+    const { refetchMemberMilestoneData, refetchProfileData } = useAchieveX();
     return useMutation({
         mutationFn: async (data: { memberId: string, amount: number, integrationKey: string }) => {
             data.integrationKey = 'deposit_succeeded';
@@ -95,6 +100,7 @@ export const useDepositMutation = (token: string, onSuccess: () => void) => {
             }
 
             refetchMemberMilestoneData();
+            refetchProfileData();
 
             return response.json();
         },
@@ -129,7 +135,7 @@ export const useClaimMilestoneMutation = (token: string | null, onSuccess?: () =
 };
 
 export const useClearMilestoneMutation = (token: string | null, onSuccess?: () => void) => {
-    const queryClient = useQueryClient();
+    const { refetchMemberMilestoneData, refetchProfileData } = useAchieveX();
     return useMutation({
         mutationFn: async ({ memberId }: { memberId: string }) => {
             const response = await fetch('/api/clearmilestone', {
@@ -143,10 +149,13 @@ export const useClearMilestoneMutation = (token: string | null, onSuccess?: () =
             if (!response.ok) {
                 throw new Error('Failed to clear milestone');
             }
+
+            refetchMemberMilestoneData();
+            refetchProfileData();
+
             return response.json();
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['achievex-profile'] });
             if (onSuccess) {
                 onSuccess();
             }

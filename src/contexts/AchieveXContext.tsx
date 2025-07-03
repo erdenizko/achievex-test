@@ -130,6 +130,7 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [memberId]);
 
+
     useEffect(() => {
         if (token) {
             localStorage.setItem('achieveXToken', token);
@@ -156,6 +157,13 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
         resetProcessActionMutation();
     }, [memberId, resetProcessActionMutation]);
 
+
+    useEffect(() => {
+        if (memberData && memberData.externalId !== memberId) {
+            setMemberId(memberData.externalId);
+        }
+    }, [memberData]);
+
     const checkPassword = () => {
         if (password === process.env.NEXT_PUBLIC_PASSWORD) {
             setShowContent(true);
@@ -174,7 +182,6 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
                     });
                     if (response.ok) {
                         const data = await response.json();
-                        console.log("data", data);
                         const profileData = {
                             level: data.data.currentLevel.name,
                             currentLevel: data.data.currentLevel.level,

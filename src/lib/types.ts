@@ -23,7 +23,12 @@ export interface MemberData {
 }
 
 export interface MemberResponse {
-  data: MemberData;
+  id: string;
+  externalId: string;
+  points: number;
+  spendablePoints: number;
+  currentLevel: Level;
+  nextLevel: Level;
 }
 
 export interface Progress {
