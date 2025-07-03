@@ -333,7 +333,7 @@ const PreviewPage = () => {
                                     )}
 
                                     {activeQuickMenu === null && (
-                                        <button className={styles.outlineButton}  onClick={() => handleClearMilestone()}>Clear Member's Progress</button>
+                                        <button className={styles.outlineButton}  onClick={() => handleClearMilestone()}>Clear Member&apos;s Progress</button>
                                     )}
 
                                     {activeQuickMenu === 'addPoints' ? (
