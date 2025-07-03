@@ -301,6 +301,11 @@ const PreviewPage = () => {
                                         <ChevronsDownIcon />
                                     </button>
                                 </div>
+                                <div style={{marginBottom: '16px', fontSize: '10px', padding: '16px', background: 'rgba(0, 0, 0, 0.1)', borderRadius: '8px'}}>
+                                    <strong style={{color: 'white'}}>Member ID:</strong> <span style={{color: 'gray'}}>{memberId}</span>
+                                    <br />
+                                    <strong style={{color: 'white'}}>Token:</strong> <span style={{color: 'gray'}}>{token}</span>
+                                </div>
                                 <div className={styles.buttonContainer}>
                                     {activeQuickMenu === 'deposit' ? (
                                         <QuickActionForm
