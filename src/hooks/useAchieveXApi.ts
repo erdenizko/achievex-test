@@ -98,7 +98,7 @@ export const useClaimMilestoneMutation = (token: string | null, onSuccess?: () =
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'x-api-key': token || ''
                 },
                 body: JSON.stringify({ memberId, milestoneId }),
             });
@@ -119,14 +119,14 @@ export const useClaimMilestoneMutation = (token: string | null, onSuccess?: () =
 export const useClearMilestoneMutation = (token: string | null, onSuccess?: () => void) => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ memberId, milestoneId }: { memberId: string; milestoneId: string }) => {
+        mutationFn: async ({ memberId }: { memberId: string }) => {
             const response = await fetch('/api/clearmilestone', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'x-api-key': token || ''
                 },
-                body: JSON.stringify({ memberId, milestoneId }),
+                body: JSON.stringify({ memberId }),
             });
             if (!response.ok) {
                 throw new Error('Failed to clear milestone');
@@ -150,7 +150,7 @@ export const useAddDiamondsMutation = (token: string | null, onSuccess?: () => v
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'x-api-key': token || ''
                 },
                 body: JSON.stringify({ memberId, amount }),
             });
@@ -176,7 +176,7 @@ export const useAddPointsMutation = (token: string | null, onSuccess?: () => voi
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'x-api-key': token || ''
                 },
                 body: JSON.stringify({ memberId, amount }),
             });

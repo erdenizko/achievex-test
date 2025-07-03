@@ -110,9 +110,9 @@
 
 .buttonContainer {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 12px;
-  min-width: 627px;
+  min-width: 427px;
 }
 
 .quickMenu button {

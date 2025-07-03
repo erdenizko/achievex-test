@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useAchieveX } from '@/contexts/AchieveXContext';
-import { useDepositMutation, useClaimMilestoneMutation, useClearMilestoneMutation, useAddDiamondsMutation, useAddPointsMutation } from '@/hooks/useAchieveXApi';
+import { useDepositMutation, useClaimMilestoneMutation, useClearMilestoneMutation, useAddPointsMutation } from '@/hooks/useAchieveXApi';
 import QuickActionForm from './components/QuickActionForm';
 import { Milestone } from '@/lib/types';
 import { ChevronsDownIcon, ZapIcon } from 'lucide-react';
@@ -64,11 +64,6 @@ const PreviewPage = () => {
         setActiveQuickMenu(null);
     });
 
-    const addDiamondsMutation = useAddDiamondsMutation(token, () => {
-        console.log("Diamonds added successfully");
-        setActiveQuickMenu(null);
-    });
-
     const addPointsMutation = useAddPointsMutation(token, () => {
         console.log("Points added successfully");
         setActiveQuickMenu(null);
@@ -87,15 +82,9 @@ const PreviewPage = () => {
         }
     };
 
-    const handleClearMilestone = (milestoneId: string) => {
+    const handleClearMilestone = () => {
         if (userData?.id) {
-            clearMilestoneMutation.mutate({ memberId: memberId, milestoneId });
-        }
-    };
-
-    const handleAddDiamonds = (amount: number) => {
-        if (userData?.id) {
-            addDiamondsMutation.mutate({ memberId: memberId, amount });
+            clearMilestoneMutation.mutate({ memberId: memberId });
         }
     };
 
@@ -116,6 +105,13 @@ const PreviewPage = () => {
         rank: profileData?.rank || 0,
     };
     
+    const generateUUID = (): string => {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      };
 
     // Handle username submission
     const handleUsernameSubmit = (e: React.FormEvent) => {
@@ -187,13 +183,6 @@ const PreviewPage = () => {
     const getProgressPercentage = () => {
         return (userProfile.currentXP / userProfile.nextLevelXP) * 100;
     };
-
-    const allMilestones = [
-        ...(memberMilestoneData?.memberMilestones || []),
-        ...(memberMilestoneData?.otherMilestones || [])
-    ];
-    console.log(allMilestones);
-    const milestoneOptions = allMilestones.map((m: Milestone) => ({ value: m.id, label: m.name }));
 
     return (
         <>
@@ -342,31 +331,8 @@ const PreviewPage = () => {
                                         <button className={styles.outlineButton}  onClick={() => setActiveQuickMenu('claim')}>Claim Milestone</button>
                                     )}
 
-                                    {activeQuickMenu === 'clear' ? (
-                                        <QuickActionForm
-                                            title="Clear Milestone"
-                                            actionLabel="Clear"
-                                            inputType="select"
-                                            selectOptions={milestoneOptions}
-                                            onSubmit={(value) => handleClearMilestone(value as string)}
-                                            isLoading={clearMilestoneMutation.isPending}
-                                            onCancel={() => setActiveQuickMenu(null)}
-                                        />
-                                    ) : activeQuickMenu === null && (
-                                        <button className={styles.outlineButton}  onClick={() => setActiveQuickMenu('clear')}>Clear Milestone</button>
-                                    )}
-
-                                    {activeQuickMenu === 'addDiamonds' ? (
-                                        <QuickActionForm
-                                            title="Add Diamonds"
-                                            actionLabel="Add"
-                                            inputType="number"
-                                            onSubmit={(value) => handleAddDiamonds(value as number)}
-                                            isLoading={addDiamondsMutation.isPending}
-                                            onCancel={() => setActiveQuickMenu(null)}
-                                        />
-                                    ) : activeQuickMenu === null && (
-                                        <button className={styles.outlineButton} onClick={() => setActiveQuickMenu('addDiamonds')}>Add Diamonds</button>
+                                    {activeQuickMenu === null && (
+                                        <button className={styles.outlineButton}  onClick={() => handleClearMilestone()}>Clear Member's Progress</button>
                                     )}
 
                                     {activeQuickMenu === 'addPoints' ? (
@@ -379,7 +345,7 @@ const PreviewPage = () => {
                                             onCancel={() => setActiveQuickMenu(null)}
                                         />
                                     ) : activeQuickMenu === null && (
-                                        <button className={styles.outlineButton} onClick={() => setActiveQuickMenu('addPoints')}>Add Points</button>
+                                        <button className={styles.outlineButton} onClick={() => setActiveQuickMenu('addPoints')}>Add XP & Points</button>
                                     )}
 
 
@@ -410,6 +376,13 @@ const PreviewPage = () => {
                                         />
                                     ) : activeQuickMenu === null && (
                                         <button onClick={() => setActiveQuickMenu('setMemberId')}>Set Member ID</button>
+                                    )}
+                                    {activeQuickMenu === null && (
+                                        <button onClick={() => {
+                                            setToken(process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || "");
+                                            setMemberId(userData?.id || "");
+                                            setActiveQuickMenu(null);
+                                        }}>Revert to Demo Token & Member ID</button>
                                     )}
                                 </div>
                             </div>

@@ -91,7 +91,12 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
         }
         return "";
     });
-    const [token, setToken] = useState(localStorage.getItem('achieveXToken') || process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || "");
+    const [token, setToken] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('achieveXToken') || process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || "";
+        }
+        return process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || "";
+    });
     const [copiedRequest, setCopiedRequest] = useState(false);
     const [copiedResponse, setCopiedResponse] = useState(false);
     const [isClearMilestoneDialogOpen, setIsClearMilestoneDialogOpen] = useState(false);
@@ -141,9 +146,9 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
 
     const refetchProfileData = () => {
         const fetchProfileData = async () => {
-            if (userData?.id) {
+            if (memberId) {
                 try {
-                    const response = await fetch(`/api/members/external/${userData?.id}`, {
+                    const response = await fetch(`/api/members/external/${memberId}`, {
                         headers: {
                             'x-api-key': token || process.env.NEXT_PUBLIC_ACHIEVEX_DEMO_TOKEN || ''
                         }

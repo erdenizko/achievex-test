@@ -4,8 +4,6 @@ import prisma from "@/lib/prisma";
 export async function POST(request: Request) {
     const token = request.headers.get("x-api-key");
     const body = await request.json();
-    console.log(body);
-    console.log(token);
     if (!token) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

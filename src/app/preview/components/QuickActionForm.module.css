@@ -7,6 +7,10 @@
     flex-direction: column;
     gap: 12px;
     width: 100%;
+
+    button {
+        width: 100%;
+    }
 }
 
 .title {
@@ -17,6 +21,7 @@
 
 .inputRow {
     display: flex;
+    flex-direction: column;
     gap: 8px;
     align-items: center;
 }
