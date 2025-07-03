@@ -99,7 +99,13 @@ const Milestones = () => {
                             <div className={styles.requirementsContainer}>
                                 <ul>
                                     {milestone.requirements.map((requirement) => (
-                                        <li key={requirement.taskId}>{requirement.taskName.replaceAll('_', ' ')} {requirement.repeatCount > 1 && <span>({requirement.repeatCount} times)</span>}</li>
+                                        <li key={requirement.taskId}>{requirement.taskName.replaceAll('_', ' ')} {requirement.repeatCount > 1 && <span>({requirement.repeatCount} times)</span>}
+                                        {milestone.isStreakBased && (
+                                            <span>
+                                                for {milestone.streakDuration} days
+                                            </span>
+                                        )}
+                                        </li>
                                     ))}
                                 </ul>
                             </div>
