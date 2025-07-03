@@ -96,6 +96,7 @@ const PreviewPage = () => {
         name: username || 'GUEST',
         level: profileData?.level || 'Stone',
         currentLevel: profileData?.currentLevel || 1,
+        currentLevelMinXP: profileData?.currentLevelMinXP || 0,
         currentXP: profileData?.currentXP || 0,
         nextLevelXP: profileData?.nextLevelXP || 500,
         totalPoints: profileData?.totalPoints || 0,
@@ -179,7 +180,11 @@ const PreviewPage = () => {
     };
 
     const getProgressPercentage = () => {
-        return (userProfile.currentXP / userProfile.nextLevelXP) * 100;
+        console.log("userProfile.currentXP", userProfile.currentXP);
+        console.log("userProfile.currentLevel", userProfile.currentLevel);
+        console.log("userProfile.nextLevelXP", userProfile.nextLevelXP);
+        console.log("progress", ((userProfile.currentXP - userProfile.currentLevelMinXP) / (userProfile.nextLevelXP - userProfile.currentLevelMinXP)) * 100);
+        return ((userProfile.currentXP - userProfile.currentLevelMinXP) / (userProfile.nextLevelXP - userProfile.currentLevelMinXP)) * 100;
     };
 
     return (

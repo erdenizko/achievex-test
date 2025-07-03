@@ -14,6 +14,7 @@ import { ActionItem, FormData, MemberMilestoneResponse, MemberResponse, Mileston
 export interface ProfileData {
     level: string;
     currentLevel: number;
+    currentLevelMinXP: number;
     currentXP: number;
     nextLevelXP: number;
     totalPoints: number;
@@ -173,9 +174,11 @@ export const AchieveXProvider = ({ children }: { children: ReactNode }) => {
                     });
                     if (response.ok) {
                         const data = await response.json();
+                        console.log("data", data);
                         const profileData = {
                             level: data.data.currentLevel.name,
                             currentLevel: data.data.currentLevel.level,
+                            currentLevelMinXP: data.data.currentLevel.min,
                             currentXP: data.data.points,
                             nextLevelXP: data.data.nextLevel.min,
                             totalPoints: data.data.spendablePoints,
