@@ -47,8 +47,7 @@ const dummyUserNames = [
 
 const Leaderboard = () => {
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
-    const { userData } = useUserData();
-    const { token } = useAchieveX();
+    const { token, memberId, username } = useAchieveX();
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
@@ -150,7 +149,7 @@ const Leaderboard = () => {
                                 </span>
                             </div>
                             <div className={styles.userInfo}>
-                                <div className={styles.username}>{entry.userId === userData?.id ? userData.username + " (You)" : entry.user}</div>
+                                <div className={styles.username}>{entry.userId === memberId ? username + " (You)" : entry.user}</div>
                             </div>
                         </div>
 

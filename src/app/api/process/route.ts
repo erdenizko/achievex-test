@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       body: JSON.stringify(body),
     });
 
-    console.log("apiResponse-----", await apiResponse.text());
+    console.log("apiResponse-----", apiResponse);
 
     const data = await apiResponse.json();
 

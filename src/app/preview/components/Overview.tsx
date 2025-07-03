@@ -87,6 +87,7 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
         if (result === 'win') {
             setIsProcessing(true);
             try {
+                console.log("memberId", memberId);
                 const response = await fetch('/api/process', {
                     method: 'POST',
                     headers: {

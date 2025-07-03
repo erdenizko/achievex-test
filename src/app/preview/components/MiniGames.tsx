@@ -116,6 +116,7 @@ const MiniGames = () => {
         if (result === 'win') {
             setIsProcessing(true);
             try {
+                console.log("memberId", memberId);
                 const response = await fetch('/api/process', {
                     method: 'POST',
                     headers: {
