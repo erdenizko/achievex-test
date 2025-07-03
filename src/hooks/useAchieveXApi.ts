@@ -190,7 +190,7 @@ export const useAddDiamondsMutation = (token: string | null, onSuccess?: () => v
 };
 
 export const useAddPointsMutation = (token: string | null, onSuccess?: () => void) => {
-    const queryClient = useQueryClient();
+    const { refetchProfileData } = useAchieveX();
     return useMutation({
         mutationFn: async ({ memberId, amount }: { memberId: string; amount: number }) => {
             const response = await fetch('/api/addpoints', {
@@ -204,10 +204,11 @@ export const useAddPointsMutation = (token: string | null, onSuccess?: () => voi
             if (!response.ok) {
                 throw new Error('Failed to add points');
             }
+
+            refetchProfileData();
             return response.json();
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['achievex-profile'] });
             if (onSuccess) {
                 onSuccess();
             }
