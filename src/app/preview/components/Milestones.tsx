@@ -26,10 +26,7 @@ interface Milestone {
 
 const Milestones = () => {
     const [milestonesData, setMilestonesData] = useState<Milestone[]>([]);
-    const { token, memberMilestoneData, memberId } = useAchieveX();
-    console.log('memberId', memberId);
-
-    console.log(memberMilestoneData?.memberMilestones);
+    const { token, memberMilestoneData } = useAchieveX();
     useEffect(() => {
         const fetchMilestones = async () => {
             const response = await fetch(`/api/achievex/milestones`, {
@@ -78,7 +75,9 @@ const Milestones = () => {
             <div className={styles.milestonesContainer}>
                 {milestonesData.map(milestone => {
                     const milestoneData = memberMilestoneData?.memberMilestones.find(m => m.id === milestone.id);
+                    console.log('milestoneData', milestoneData);
                     const isCompleted = milestoneData ? true : false;
+                    console.log('isCompleted', isCompleted);
                     return (
                     <SpotlightCard
                         key={milestone.id}
@@ -100,7 +99,7 @@ const Milestones = () => {
                             {milestone.isStreakBased && (
                                 <div className={styles.streakContainer}>
                                     {Array.from({length: milestone.streakDuration}).map((_, index) => (
-                                        <div className={`${styles.streakDot} ${(milestoneData?.streakInfo?.currentStreak || 0) <= index ? styles.completed : ''}`} key={index}></div>
+                                        <div className={`${styles.streakDot} ${(milestoneData?.streakInfo?.currentStreak || -1) >= index ? styles.completed : ''}`} key={index}></div>
                                     ))}
                                 </div>
                             )}
