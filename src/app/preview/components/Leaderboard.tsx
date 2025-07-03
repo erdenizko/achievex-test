@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Leaderboard.module.css';
 import SpotlightCard from '../../../components/SpotlightCard/SpotlightCard';
-import { useUserData } from '@/hooks/useUserData';
 import { useAchieveX } from '@/contexts/AchieveXContext';
 
 interface LeaderboardEntry {
