@@ -180,7 +180,8 @@ const PreviewPage = () => {
     };
 
     const getProgressPercentage = () => {
-        return ((userProfile.currentXP - userProfile.currentLevelMinXP) / (userProfile.nextLevelXP - userProfile.currentLevelMinXP)) * 100;
+        const value = ((userProfile.currentXP - userProfile.currentLevelMinXP) / (userProfile.nextLevelXP - userProfile.currentLevelMinXP)) * 100;
+        return value > 100 ? 100 : value;
     };
 
     return (
