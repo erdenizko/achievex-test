@@ -180,10 +180,6 @@ const PreviewPage = () => {
     };
 
     const getProgressPercentage = () => {
-        console.log("userProfile.currentXP", userProfile.currentXP);
-        console.log("userProfile.currentLevel", userProfile.currentLevel);
-        console.log("userProfile.nextLevelXP", userProfile.nextLevelXP);
-        console.log("progress", ((userProfile.currentXP - userProfile.currentLevelMinXP) / (userProfile.nextLevelXP - userProfile.currentLevelMinXP)) * 100);
         return ((userProfile.currentXP - userProfile.currentLevelMinXP) / (userProfile.nextLevelXP - userProfile.currentLevelMinXP)) * 100;
     };
 
