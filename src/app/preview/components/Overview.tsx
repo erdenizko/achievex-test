@@ -55,7 +55,7 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
-    const { token, refetchProfileData, memberId } = useAchieveX();
+    const { token, refetchProfileData, memberId, refetchMemberMilestoneData } = useAchieveX();
     const [isBonusClaimed, setIsBonusClaimed] = useState(false);
     const [isClaimingBonus, setIsClaimingBonus] = useState(false);
 
@@ -112,6 +112,7 @@ const Overview = ({ setActiveView }: { setActiveView: (view: string) => void }) 
 
                 if (response.ok) {
                     refetchProfileData();
+                    refetchMemberMilestoneData();
                 } else {
                     console.error('Failed to process game result');
                 }

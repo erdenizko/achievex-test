@@ -84,7 +84,7 @@ const MiniGames = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const { token, memberId } = useAchieveX();
 
-    const { refetchProfileData } = useAchieveX();
+    const { refetchProfileData, refetchMemberMilestoneData } = useAchieveX();
 
     const getSpotlightColor = (difficulty: string) => {
         switch (difficulty) {
@@ -132,6 +132,7 @@ const MiniGames = () => {
 
                 if (response.ok) {
                     refetchProfileData();
+                    refetchMemberMilestoneData();
                 } else {
                     console.error('Failed to process game result');
                 }
