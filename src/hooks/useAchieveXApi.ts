@@ -128,7 +128,6 @@ export const useClaimMilestoneMutation = (token: string | null, onSuccess?: () =
             return response.json();
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['achievex-profile'] });
             if (onSuccess) {
                 onSuccess();
             }
@@ -154,6 +153,7 @@ export const useClearMilestoneMutation = (token: string | null, onSuccess?: () =
 
             refetchMemberMilestoneData();
             refetchProfileData();
+            localStorage.removeItem('dailyBonusClaimed');
 
             return response.json();
         },
