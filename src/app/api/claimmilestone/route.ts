@@ -37,56 +37,65 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
         }
 
-        await prisma.milestoneProgress.findFirst({
+        let milestoneProgress = await prisma.milestoneProgress.findFirst({
             where: {
                 memberId: member.id,
                 milestoneId: body.milestoneId,
             }
-        }).then(async (milestoneProgress) => {
-            if (!milestoneProgress) {
-                return NextResponse.json({ error: "Milestone progress not found" }, { status: 404 });
-            }
-
-            if(milestoneProgress.completed) {
-                return NextResponse.json({ error: "Milestone already completed" }, { status: 400 });
-            }
-
-            if(milestone.isStreakBased) {
-                await prisma.milestoneProgress.update({
-                    where: {
-                        id: milestoneProgress.id,
-                        memberId: member.id
-                    },
-                    data: {
-                        completed: milestone.streakDuration ? ((milestoneProgress.currentStreak + 1) >= milestone.streakDuration) : true,
-                        currentStreak: milestone.isStreakBased ? milestoneProgress.currentStreak + 1 : 0,
-                    },
-                });
-            } else {
-                await prisma.milestoneProgress.update({
-                    where: {
-                        id: milestoneProgress.id,
-                        memberId: member.id
-                    },
-                    data: {
-                        completed: true,
-                    },
-                });
-            }
-
-
-            await prisma.member.update({
-                where: {
-                    id: member.id,
-                },
-                data: {
-                    totalPoints: member.totalPoints + milestone.rewardPoints,
-                    spendablePoints: member.spendablePoints + milestone.rewardPoints,
-                },
-            });
         });
 
-        return NextResponse.json({ message: "Request removed from database" });
+        // Create milestone progress if it doesn't exist
+        if (!milestoneProgress) {
+            milestoneProgress = await prisma.milestoneProgress.create({
+                data: {
+                    memberId: member.id,
+                    milestoneId: body.milestoneId,
+                    completed: false,
+                    currentStreak: 0,
+                    milestoneRequirementsIds: [],
+                }
+            });
+        }
+
+        if(milestoneProgress.completed) {
+            return NextResponse.json({ error: "Milestone already completed" }, { status: 400 });
+        }
+
+
+        if(milestone.isStreakBased) {
+            await prisma.milestoneProgress.update({
+                where: {
+                    id: milestoneProgress.id,
+                    memberId: member.id
+                },
+                data: {
+                    completed: milestone.streakDuration ? ((milestoneProgress.currentStreak + 1) >= milestone.streakDuration) : true,
+                    currentStreak: milestone.isStreakBased ? milestoneProgress.currentStreak + 1 : 0,
+                },
+            });
+        } else {
+            await prisma.milestoneProgress.update({
+                where: {
+                    id: milestoneProgress.id,
+                    memberId: member.id
+                },
+                data: {
+                    completed: true,
+                },
+            });
+        }
+
+        await prisma.member.update({
+            where: {
+                id: member.id,
+            },
+            data: {
+                totalPoints: member.totalPoints + milestone.rewardPoints,
+                spendablePoints: member.spendablePoints + milestone.rewardPoints,
+            },
+        });
+
+        return NextResponse.json({ message: "We processed your request" });
     } catch (error) {
         console.error("Error processing data:", error);
         return NextResponse.json(

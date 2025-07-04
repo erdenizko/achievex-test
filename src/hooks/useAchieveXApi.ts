@@ -109,7 +109,7 @@ export const useDepositMutation = (token: string, onSuccess: () => void) => {
 };
 
 export const useClaimMilestoneMutation = (token: string | null, onSuccess?: () => void) => {
-    const queryClient = useQueryClient();
+    const { refetchMemberMilestoneData, refetchProfileData } = useAchieveX();
     return useMutation({
         mutationFn: async ({ memberId, milestoneId }: { memberId: string; milestoneId: string }) => {
             const response = await fetch('/api/claimmilestone', {
@@ -123,6 +123,8 @@ export const useClaimMilestoneMutation = (token: string | null, onSuccess?: () =
             if (!response.ok) {
                 throw new Error('Failed to claim milestone');
             }
+            refetchMemberMilestoneData();
+            refetchProfileData();
             return response.json();
         },
         onSuccess: () => {
